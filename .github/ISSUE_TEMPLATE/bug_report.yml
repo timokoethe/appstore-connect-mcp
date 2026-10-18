@@ -1,0 +1,67 @@
+name: Bug report
+description: Report a problem with the App Store Connect MCP server.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve appstore-connect-mcp.
+        Remove API keys, private key contents, tokens, and sensitive app or account data before submitting logs or configuration.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened, and what did you expect instead?
+      placeholder: When requesting App Store Connect data, the server returns an error instead of...
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      placeholder: |
+        1. Configure the server in an MCP client using ...
+        2. Call the tool ... with arguments ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Server Version or Commit
+      placeholder: v1.0.0 or a commit SHA
+    validations:
+      required: true
+  - type: input
+    id: client
+    attributes:
+      label: MCP Client and Version
+      placeholder: Claude Code, Codex, or another MCP client (include version)
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Runtime and Operating System
+      description: Include your Node.js version and operating system.
+      placeholder: Node.js vX.Y.Z on macOS / Windows / Linux
+    validations:
+      required: true
+  - type: input
+    id: tool
+    attributes:
+      label: Affected MCP Tool or Operation
+      placeholder: Tool name, server startup, authentication, or connection
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error Messages and Logs
+      description: Paste relevant output and any HTTP status code. Remove credentials and sensitive data.
+      render: text
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Add sanitized configuration, relevant App Store Connect API permissions, screenshots, or anything else that helps.

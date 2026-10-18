@@ -1,0 +1,37 @@
+name: Feature request
+description: Suggest a tool, data source, or improvement for the MCP server.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing an idea for appstore-connect-mcp.
+        The project is a lightweight, read-only MCP server for Apple App Store Connect. Keep that scope in mind when describing your idea.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What are you trying to accomplish, and what is missing today?
+      placeholder: When checking an app's TestFlight builds through my MCP client, I need to...
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: What tool, data, or behavior should the server provide?
+      placeholder: It would be helpful to have a read-only tool that returns...
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Describe any existing tools or workarounds you have tried.
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Add example tool inputs and outputs, relevant Apple API documentation links, or MCP client details. Remove credentials and sensitive data.
