@@ -1,7 +1,30 @@
-# appstore-connect-mcp
+# App Store Connect MCP
 
-A lightweight, read-only MCP server for Apple App Store Connect. Access apps, versions, metadata, TestFlight builds, and screenshots with Claude Code, Codex, and other MCP clients.
+![Status: Early Development](https://img.shields.io/badge/status-early%20development-orange)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![Node.js: 20+](https://img.shields.io/badge/Node.js-20%2B-5FA04E?logo=nodedotjs&logoColor=white)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
+A TypeScript project for a read-only [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server for Apple App Store Connect.
+
+## Status
+
+Early development. The repository contains the project scaffold and dependencies; the server and MCP tools are not implemented yet.
+
+## Development
+
+Requires **Node.js 20+** and **npm**. Install dependencies with:
+
+```sh
+npm ci
+```
+
+Source code lives in `src/`. Build and start scripts are not yet available; `npm test` is a failing placeholder.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines and [SECURITY.md](SECURITY.md) for private vulnerability reporting.
 
 ## License
 
-This project is released under the MIT License. See [LICENSE](LICENSE).
+[MIT](LICENSE)
