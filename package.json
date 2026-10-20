@@ -2,7 +2,7 @@
   "name": "appstore-connect-mcp",
   "version": "1.0.0",
   "description": "A lightweight, read-only MCP server for Apple App Store Connect. Access apps, versions, metadata, TestFlight builds, and screenshots with Claude Code, Codex, and other MCP clients.",
-  "main": "index.js",
+  "main": "build/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,7 +11,7 @@
     "url": "git+https://github.com/timokoethe/appstore-connect-mcp.git"
   },
   "keywords": [],
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/timokoethe/appstore-connect-mcp/issues"
   },
