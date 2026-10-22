@@ -6,4 +6,4 @@
 - Never add operations that create, modify, or delete App Store Connect resources.
 - Never commit or expose credentials, private keys, tokens, or private app data in logs or tool responses.
 - Follow `CONTRIBUTING.md` and `SECURITY.md`.
-- Verify relevant changes and report what was checked. The project is currently a scaffold: build/start scripts are missing and `npm test` is a failing placeholder.
+- Verify relevant changes with `npm run typecheck` and `npm run build`, and report what was checked. The project is currently a scaffold: `npm start` runs the empty compiled entry point and `npm test` is a failing placeholder.
