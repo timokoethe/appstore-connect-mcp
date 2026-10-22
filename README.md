@@ -19,7 +19,15 @@ Requires **Node.js 20+** and **npm**. Install dependencies with:
 npm ci
 ```
 
-Source code lives in `src/`. Build and start scripts are not yet available; `npm test` is a failing placeholder.
+Source code lives in `src/`. Check types, compile to `build/`, and run the compiled entry point with:
+
+```sh
+npm run typecheck
+npm run build
+npm start
+```
+
+Run `npm run build` again after changing source files. The entry point is currently empty, so `npm start` exits without starting an MCP server. `npm test` remains a failing placeholder.
 
 ## Contributing
 
