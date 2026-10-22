@@ -11,6 +11,8 @@ A TypeScript project for a read-only [Model Context Protocol (MCP)](https://mode
 
 Early development. The repository contains the project scaffold and dependencies; the server and MCP tools are not implemented yet.
 
+See the [tool roadmap and MVP](docs/tools.md) for proposed tools, API mappings, read-only boundaries, and implementation priorities.
+
 ## Development
 
 Requires **Node.js 20+** and **npm**. Install dependencies with:
