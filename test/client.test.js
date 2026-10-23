@@ -65,7 +65,7 @@ test('sanitizes token-provider failures without issuing a request', async () => 
 });
 
 for (const [status, code] of [[400, 'upstream'], [401, 'authentication'], [403, 'access_denied'],
-  [404, 'not_found'], [429, 'rate_limited'], [500, 'upstream'], [503, 'upstream'],
+  [404, 'not_found'], [500, 'upstream'],
   [301, 'upstream'], [302, 'upstream'], [307, 'upstream'], [308, 'upstream']]) {
   test(`sanitizes HTTP ${status}, cancels its body and does not retry or follow redirects`, async () => {
     let calls = 0;
@@ -85,7 +85,7 @@ for (const [status, code] of [[400, 'upstream'], [401, 'authentication'], [403, 
 
 test('sanitizes network failures and malformed JSON', async () => {
   for (const fetch of [async () => { throw new Error(secret); }, async () => new Response(secret)]) {
-    const client = createAppleClient(tokens, { fetch });
+    const client = createAppleClient(tokens, { fetch, wait: async () => {} });
     await assert.rejects(client.get('/v1/apps'), safeError('upstream'));
   }
 });
@@ -179,6 +179,6 @@ test('enforces the default one MiB limit and sanitizes cancellation failures', a
 test('sanitizes empty bodies and failures while reading a response', async () => {
   for (const fetch of [async () => new Response(null, { status: 204 }),
     async () => new Response(new ReadableStream({ start(controller) { controller.error(new Error(secret)); } }))]) {
-    await assert.rejects(createAppleClient(tokens, { fetch }).get('/v1/apps'), safeError('upstream'));
+    await assert.rejects(createAppleClient(tokens, { fetch, wait: async () => {} }).get('/v1/apps'), safeError('upstream'));
   }
 });
