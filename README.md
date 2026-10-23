@@ -9,7 +9,7 @@ A TypeScript project for a read-only [Model Context Protocol (MCP)](https://mode
 
 ## Status
 
-Early development. The repository contains the project scaffold and dependencies; the server and MCP tools are not implemented yet.
+Early development. Configuration, JWT authentication, and the GET-only Apple HTTP client are implemented; the MCP server and tools are not implemented yet.
 
 See the [tool overview](docs/tools.md), [shared rules](docs/tools/shared-behavior.md), and [roadmap](docs/roadmap.md).
 
@@ -29,7 +29,7 @@ npm run build
 npm start
 ```
 
-Run `npm run build` again after changing source files. The entry point is currently empty, so `npm start` exits without starting an MCP server. Run `npm test` to build and execute the configuration and JWT authentication tests with Node's built-in test runner. Tests use synthetic keys and make no network requests.
+Run `npm run build` again after changing source files. The entry point is currently empty, so `npm start` exits without starting an MCP server. Run `npm test` to build and execute the configuration, JWT authentication, and Apple client tests with Node's built-in test runner. Tests use synthetic keys and make no network requests.
 
 ### Configuration
 
@@ -51,7 +51,15 @@ Supply variables through the process environment or the MCP client's server conf
 
 Tokens have a ten-minute lifetime. A cached token is reused until a call occurs with 60 seconds or less remaining, at which point it is renewed. If the clock moves before the cached token's issuance time, the next call also renews it; a backwards change that stays within the valid cache interval does not. A signing failure returns a sanitized error rather than the old token, and a subsequent call retries renewal.
 
-The key is loaded once; restart the process after rotating credentials. Encrypted private keys are unsupported; the loader accepts unencrypted EC P-256 private keys. Never log the provider's token or return it through an MCP tool. Authentication does not itself issue HTTP requests or enforce HTTP methods; the planned Apple client must enforce GET-only access.
+The key is loaded once; restart the process after rotating credentials. Encrypted private keys are unsupported; the loader accepts unencrypted EC P-256 private keys. Never log the provider's token or return it through an MCP tool. Authentication does not itself issue HTTP requests; the Apple client enforces GET-only access.
+
+### Apple HTTP client
+
+`createAppleClient(tokenProvider, { fetch?, timeoutMs? })` in `src/apple/client.ts` exposes only `get(path, query?)`. It uses the fixed Apple API origin, rejects redirects, and encodes query values separately. Paths must start with `/v1/` or `/v2/`; segments accept letters, digits, underscores, and hyphens. URLs, embedded queries, and encoded paths are rejected.
+
+The default timeout is ten seconds and covers fetching and reading JSON, using [Node's fetch and AbortController](https://nodejs.org/docs/latest/api/globals.html). Errors expose stable `AppleClientError.code` categories and fixed messages without underlying errors, response bodies, or credentials. Returned JSON is internal `unknown` data; tools must validate it and select allowed fields before returning it to MCP clients.
+
+Each call makes one request. Automatic retries, pagination, response-size limits, and MCP startup integration remain future work. Tests inject synthetic fetch responses and make no network requests.
 
 ## Contributing
 
