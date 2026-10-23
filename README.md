@@ -55,13 +55,15 @@ The key is loaded once; restart the process after rotating credentials. Encrypte
 
 ### Apple HTTP client
 
-`createAppleClient(tokenProvider, { fetch?, timeoutMs?, maxResponseBytes? })` in `src/apple/client.ts` exposes only `get(path, query?)`. It uses the fixed Apple API origin, rejects redirects, and encodes query values separately. Paths must start with `/v1/` or `/v2/`; segments accept letters, digits, underscores, and hyphens. URLs, embedded queries, and encoded paths are rejected.
+`createAppleClient(tokenProvider, { fetch?, timeoutMs?, maxResponseBytes?, wait?, now? })` in `src/apple/client.ts` exposes only `get(path, query?)`. It uses the fixed Apple API origin, rejects redirects, and encodes query values separately. Paths must start with `/v1/` or `/v2/`; segments accept letters, digits, underscores, and hyphens. URLs, embedded queries, and encoded paths are rejected.
 
-The default timeout is ten seconds and covers fetching and reading JSON, using [Node's fetch and AbortController](https://nodejs.org/docs/latest/api/globals.html). Errors expose stable `AppleClientError.code` categories and fixed messages without underlying errors, response bodies, or credentials. Returned JSON is internal `unknown` data; tools must validate it and select allowed fields before returning it to MCP clients.
+The default timeout is ten seconds per attempt and covers fetching and reading JSON, using [Node's fetch and AbortController](https://nodejs.org/docs/latest/api/globals.html). Errors expose stable `AppleClientError.code` categories and fixed messages without underlying errors, response bodies, or credentials. Returned JSON is internal `unknown` data; tools must validate it and select allowed fields before returning it to MCP clients.
 
 Responses are limited to 1 MiB by default, configurable through `maxResponseBytes` (a positive safe integer). The client counts bytes from the response stream independently of `Content-Length` and cancels reading on overflow with `response_too_large`. This transport limit is separate from the future MCP output budget.
 
-Each call makes one request. Automatic retries, pagination, and MCP startup integration remain future work. Tests inject synthetic fetch responses and make no network requests.
+Network failures and HTTP 429, 502, 503, and 504 receive at most two retries, with default delays of 500 ms and 1 s. [`Retry-After`](https://www.rfc-editor.org/rfc/rfc9110.html#section-10.2.3) supports seconds or an HTTP date. Delays above five seconds end the call with the original safe error rather than retrying early; invalid values use the default delay. Timeouts, other HTTP errors, invalid JSON, and oversized responses are not retried. Each attempt obtains a token from the provider.
+
+Tests inject fetch, wait, and clock functions; retry tests live in `test/client-retry.test.js`. No tests contact Apple. Pagination and MCP startup integration remain future work.
 
 ## Contributing
 
