@@ -1,6 +1,6 @@
 # Roadmap and MVP
 
-Status: proposed design. No MCP tools are implemented yet. See the [tool overview](tools.md) for current contract proposals and the [shared behavior](tools/shared-behavior.md) for cross-tool requirements.
+Status: `list_apps` and local stdio startup are implemented; remaining tools are planned. See the [tool overview](tools.md) for current contract proposals and the [shared behavior](tools/shared-behavior.md) for cross-tool requirements.
 
 ## Purpose and prioritization
 

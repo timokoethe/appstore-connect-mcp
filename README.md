@@ -9,7 +9,7 @@ A TypeScript project for a read-only [Model Context Protocol (MCP)](https://mode
 
 ## Status
 
-Early development. Configuration, JWT authentication, and the GET-only Apple HTTP client are implemented; the MCP server and tools are not implemented yet.
+Early development. The local stdio MCP server provides `list_apps` with validated inputs, bounded pagination, and safe errors. Other tools remain planned.
 
 See the [tool overview](docs/tools.md), [shared rules](docs/tools/shared-behavior.md), and [roadmap](docs/roadmap.md).
 
@@ -29,7 +29,7 @@ npm run build
 npm start
 ```
 
-Run `npm run build` again after changing source files. The entry point is currently empty, so `npm start` exits without starting an MCP server. Run `npm test` to build and execute the configuration, JWT authentication, and Apple client tests with Node's built-in test runner. Tests use synthetic keys and make no network requests.
+Run `npm run build` again after changing source files. `npm start` starts the stdio server and requires the configuration below. Run `npm test` for configuration, authentication, HTTP client, pagination, and MCP protocol tests. Automated tests use synthetic data and make no network requests.
 
 ### Configuration
 
@@ -43,7 +43,19 @@ Run `npm run build` again after changing source files. The entry point is curren
 
 Values are trimmed. The loader validates identifiers and file accessibility without reading or returning key contents. Files may be symlinks to regular files. Errors identify the setting without including its value or underlying filesystem errors.
 
-Supply variables through the process environment or the MCP client's server configuration. `.env` files are not loaded automatically. Keep key files outside the repository. The loader is not connected to the empty entry point yet; server startup integration follows with the MCP implementation.
+Supply variables through the process environment or the MCP client's server configuration. `.env` files are not loaded automatically. Keep key files outside the repository. Startup validates configuration and loads the key before accepting MCP requests. Failures emit a fixed message on stderr and exit with code 1.
+
+### MCP client setup
+
+Configure your MCP client to launch `node` with the absolute path to `build/index.js` and supply the three `ASC_*` variables in its environment. Use an absolute key path to avoid dependence on the client working directory. Launch the compiled entry point directly so npm output cannot enter the protocol stream.
+
+For a local, ignored `.env.local`, Node.js 20.6+ can load it explicitly:
+
+```sh
+node --env-file=.env.local build/index.js
+```
+
+The server waits for MCP messages on stdin; stdout contains only protocol traffic. Start with `list_apps` arguments `{ "limit": 20 }`, then follow `nextCursor` explicitly. See the [tool contract](docs/tools/list_apps.md) for filters, limits, and cursor lifetime.
 
 ### Authentication
 
@@ -59,11 +71,11 @@ The key is loaded once; restart the process after rotating credentials. Encrypte
 
 The default timeout is ten seconds per attempt and covers fetching and reading JSON, using [Node's fetch and AbortController](https://nodejs.org/docs/latest/api/globals.html). Errors expose stable `AppleClientError.code` categories and fixed messages without underlying errors, response bodies, or credentials. Returned JSON is internal `unknown` data; tools must validate it and select allowed fields before returning it to MCP clients.
 
-Responses are limited to 1 MiB by default, configurable through `maxResponseBytes` (a positive safe integer). The client counts bytes from the response stream independently of `Content-Length` and cancels reading on overflow with `response_too_large`. This transport limit is separate from the future MCP output budget.
+Responses are limited to 1 MiB by default, configurable through `maxResponseBytes` (a positive safe integer). The client counts bytes from the response stream independently of `Content-Length` and cancels reading on overflow with `response_too_large`. This transport limit is separate from the [tool output budget](docs/tools/shared-behavior.md#implemented-list_apps-policy).
 
 Network failures and HTTP 429, 502, 503, and 504 receive at most two retries, with default delays of 500 ms and 1 s. [`Retry-After`](https://www.rfc-editor.org/rfc/rfc9110.html#section-10.2.3) supports seconds or an HTTP date. Delays above five seconds end the call with the original safe error rather than retrying early; invalid values use the default delay. Timeouts, other HTTP errors, invalid JSON, and oversized responses are not retried. Each attempt obtains a token from the provider.
 
-Tests inject fetch, wait, and clock functions; retry tests live in `test/client-retry.test.js`. No tests contact Apple. Pagination and MCP startup integration remain future work.
+Tests inject fetch, wait, and clock functions; retry tests live in `test/client-retry.test.js`. No automated tests contact Apple.
 
 ## Contributing
 
