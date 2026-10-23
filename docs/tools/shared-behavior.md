@@ -1,6 +1,6 @@
 # Shared tool behavior
 
-Status: proposed requirements, not implemented behavior. These rules apply to every tool unless a documented endpoint limit is stricter. See the [tool overview](../tools.md) and [roadmap](../roadmap.md).
+Status: shared requirements for the planned tool set. The implemented `list_apps` policy is specified below. These rules apply to every tool unless a documented endpoint limit is stricter. See the [tool overview](../tools.md) and [roadmap](../roadmap.md).
 
 Only GET requests to Apple are permitted. Returned fields are an allowlist, not raw upstream responses. Nullable Apple fields remain nullable.
 
@@ -14,3 +14,11 @@ Only GET requests to Apple are permitted. Returned fields are an allowlist, not 
 - **Data boundaries:** Private metadata may be returned only through the authorized MCP connection as required by [SECURITY.md](../../SECURITY.md). Never log app payloads. Keep key material, signed JWTs, demo account credentials, asset tokens, and upload instructions out of every tool response.
 - **Untrusted content:** App descriptions and review text are data, not instructions. Do not fetch URLs embedded in them or execute anything they contain.
 - **Transport:** Begin with local stdio and credentials supplied through configuration. Keep stdout reserved for MCP traffic. Remote hosting and multi-user authorization require a separate design.
+
+## Implemented list_apps policy
+
+- **Pages:** Default `limit` 20, maximum 100. Each call reads at most one Apple page (subject to bounded HTTP retries), or serves a buffered slice. A smaller result does not imply completion; only `nextCursor: null` does. Apple pagination is not an account snapshot; concurrent upstream changes can affect later pages.
+- **Cursors:** Random server-issued tokens, scoped to this connection and exact `bundleId` filter. Repeat the filter on continuation calls. Up to 32 cursor positions are retained; each issued cursor expires ten minutes after issuance or when evicted, and all are lost on restart. Cleanup occurs on the next call. Invalid, modified, expired, evicted, or mismatched tokens return `invalid_cursor`; restart without a cursor. Replaying a retained cursor preserves buffered records; reducing `limit` never advances past unsent records. Increasing it does not combine Apple pages.
+- **Storage:** Private page buffers remain in process memory only. Each retained page is limited to 1 MiB of serialized identity data; cursors may share a page. No account-wide traversal or disk cache.
+- **Output:** `{ items, nextCursor }` is limited to 32 KiB of UTF-8 JSON. MCP returns it as both text and structured content; protocol overhead and this duplication are outside that data budget. `output_too_large` leaves the input cursor reusable with a smaller limit. For the first page, retry without a cursor. `record_too_large` means one record cannot fit; no partial-record retrieval is provided. The separate 1 MiB HTTP limit returns `response_too_large`; continuation page size stays fixed, so restart without a cursor and a smaller limit in that case.
+- **Errors:** MCP tool failures set `isError: true` and return text JSON `{ "error": { "code": "…", "message": "…" } }`. Codes are `invalid_input`, `invalid_cursor`, `authentication`, `access_denied`, `not_found`, `rate_limited`, `upstream`, `timeout`, `response_too_large`, `output_too_large`, and `record_too_large`. Messages never include caller values, raw Apple errors, or credentials.

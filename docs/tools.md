@@ -1,12 +1,12 @@
 # Tool overview
 
-Status: proposed design, originally reviewed against Apple documentation on 2026-10-22. No tools are implemented yet. Tool names and contracts are project proposals, not Apple API names or a promise of complete API coverage.
+Status: `list_apps` is implemented; the other tools below are planned. Tool names are project interfaces, not Apple API names or a promise of complete API coverage.
 
 See the [roadmap](roadmap.md) for priorities, later candidates, non-goals, and implementation acceptance. [Shared behavior](tools/shared-behavior.md) defines pagination, limits, validation, errors, and data boundaries once for all tools.
 
 ## Core MVP
 
-Start with [`list_apps`](tools/list_apps.md). Use its page as a template when developing further tool contracts; move their details and API mappings to those pages.
+The first milestone, [`list_apps`](tools/list_apps.md), is available over local stdio. Use its page as a template when developing further tool contracts; move their details and API mappings to those pages.
 
 All list tools take optional `limit` and `cursor` as described in [shared behavior](tools/shared-behavior.md). IDs are opaque strings. Required inputs are shown without `?`. Returned fields are an allowlist, not raw upstream responses. Nullable Apple fields remain nullable.
 
