@@ -9,6 +9,7 @@ const MESSAGES = {
   rate_limited: 'Apple rate limit reached. Retry later.',
   upstream: 'Apple request failed. Retry later.',
   timeout: 'Apple request timed out. Retry later.',
+  response_too_large: 'Apple response exceeded the size limit. Request less data.',
 } as const;
 
 export class AppleClientError extends Error {
@@ -26,14 +27,42 @@ export interface AppleClient {
 interface ClientOptions {
   fetch?: typeof globalThis.fetch;
   timeoutMs?: number;
+  maxResponseBytes?: number;
+}
+
+async function readJson(response: Response, maxBytes: number): Promise<unknown> {
+  if (!response.body) throw new AppleClientError('upstream');
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let bytes = 0;
+  let text = '';
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      bytes += value.byteLength;
+      if (bytes > maxBytes) {
+        // Do not wait for cancellation or retain the oversized chunk.
+        void reader.cancel().catch(() => {});
+        throw new AppleClientError('response_too_large');
+      }
+      text += decoder.decode(value, { stream: true });
+    }
+    return JSON.parse(text + decoder.decode());
+  } finally {
+    reader.releaseLock();
+  }
 }
 
 /** Internal transport, not an MCP proxy. Dependencies are trusted application configuration. */
 export function createAppleClient(
   tokens: TokenProvider,
-  { fetch: fetchImpl = globalThis.fetch, timeoutMs = 10_000 }: ClientOptions = {},
+  { fetch: fetchImpl = globalThis.fetch, timeoutMs = 10_000, maxResponseBytes = 1_048_576 }: ClientOptions = {},
 ): AppleClient {
   if (!Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 2_147_483_647) {
+    throw new AppleClientError('invalid_input');
+  }
+  if (!Number.isSafeInteger(maxResponseBytes) || maxResponseBytes < 1) {
     throw new AppleClientError('invalid_input');
   }
 
@@ -80,7 +109,7 @@ export function createAppleClient(
             : 'upstream';
           throw new AppleClientError(code);
         }
-        return await response.json();
+        return await readJson(response, maxResponseBytes);
       } catch (error) {
         if (controller.signal.aborted) throw new AppleClientError('timeout');
         if (error instanceof AppleClientError) throw error;
