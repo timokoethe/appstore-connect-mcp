@@ -126,3 +126,59 @@ test('clears the timeout after success and obtains a fresh token on each call', 
   assert.equal(count, 2);
   assert.ok(signals.every((signal) => !signal.aborted));
 });
+
+test('validates response byte limit configuration', () => {
+  for (const maxResponseBytes of [0, -1, 1.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1, '100']) {
+    assert.throws(() => createAppleClient(tokens, { maxResponseBytes }), safeError('invalid_input'));
+  }
+});
+
+test('accepts JSON exactly at the byte limit, including split UTF-8 characters', async () => {
+  const bytes = new TextEncoder().encode('{"name":"Ä🍎"}');
+  const client = createAppleClient(tokens, {
+    maxResponseBytes: bytes.length,
+    fetch: async () => new Response(new ReadableStream({ start(controller) {
+      for (const byte of bytes) controller.enqueue(Uint8Array.of(byte));
+      controller.close();
+    } })),
+  });
+  assert.deepEqual(await client.get('/v1/apps'), { name: 'Ä🍎' });
+});
+
+for (const contentLength of [undefined, '1', '999999']) {
+  test(`counts actual bytes and cancels oversized responses (Content-Length: ${contentLength})`, async () => {
+    let cancelled = false;
+    let calls = 0;
+    const client = createAppleClient(tokens, {
+      maxResponseBytes: 4,
+      fetch: async () => {
+        calls++;
+        return new Response(new ReadableStream({
+          start(controller) {
+            controller.enqueue(new TextEncoder().encode('null'));
+            controller.enqueue(new TextEncoder().encode(' '));
+          },
+          cancel() { cancelled = true; },
+        }), { headers: contentLength === undefined ? {} : { 'Content-Length': contentLength } });
+      },
+    });
+    await assert.rejects(client.get('/v1/apps'), safeError('response_too_large'));
+    assert.equal(cancelled, true);
+    assert.equal(calls, 1);
+  });
+}
+
+test('enforces the default one MiB limit and sanitizes cancellation failures', async () => {
+  const client = createAppleClient(tokens, { fetch: async () => new Response(new ReadableStream({
+    start(controller) { controller.enqueue(new Uint8Array(1_048_577)); },
+    cancel() { throw new Error(secret); },
+  })) });
+  await assert.rejects(client.get('/v1/apps'), safeError('response_too_large'));
+});
+
+test('sanitizes empty bodies and failures while reading a response', async () => {
+  for (const fetch of [async () => new Response(null, { status: 204 }),
+    async () => new Response(new ReadableStream({ start(controller) { controller.error(new Error(secret)); } }))]) {
+    await assert.rejects(createAppleClient(tokens, { fetch }).get('/v1/apps'), safeError('upstream'));
+  }
+});
