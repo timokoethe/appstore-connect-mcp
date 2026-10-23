@@ -1,0 +1,94 @@
+import type { TokenProvider } from './auth.js';
+
+const ORIGIN = 'https://api.appstoreconnect.apple.com';
+const MESSAGES = {
+  invalid_input: 'Invalid Apple API request.',
+  authentication: 'Apple authentication failed. Check the configured credentials.',
+  access_denied: 'Apple denied access. Check the API key permissions.',
+  not_found: 'The requested Apple resource was not found.',
+  rate_limited: 'Apple rate limit reached. Retry later.',
+  upstream: 'Apple request failed. Retry later.',
+  timeout: 'Apple request timed out. Retry later.',
+} as const;
+
+export class AppleClientError extends Error {
+  constructor(public readonly code: keyof typeof MESSAGES) {
+    super(MESSAGES[code]);
+    this.name = 'AppleClientError';
+  }
+}
+
+export interface AppleClient {
+  /** Internal JSON only: tools must validate and allowlist fields before returning data. */
+  get(path: string, query?: Readonly<Record<string, string>>): Promise<unknown>;
+}
+
+interface ClientOptions {
+  fetch?: typeof globalThis.fetch;
+  timeoutMs?: number;
+}
+
+/** Internal transport, not an MCP proxy. Dependencies are trusted application configuration. */
+export function createAppleClient(
+  tokens: TokenProvider,
+  { fetch: fetchImpl = globalThis.fetch, timeoutMs = 10_000 }: ClientOptions = {},
+): AppleClient {
+  if (!Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 2_147_483_647) {
+    throw new AppleClientError('invalid_input');
+  }
+
+  return Object.freeze({
+    async get(path: string, query: Readonly<Record<string, string>> = {}): Promise<unknown> {
+      // Deliberately narrow paths: no URLs, escapes, dot segments, queries or fragments.
+      if (typeof path !== 'string' || !/^\/v[12]\/[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)*$/.test(path)) {
+        throw new AppleClientError('invalid_input');
+      }
+      const url = new URL(path, ORIGIN);
+      try {
+        if (!query || typeof query !== 'object' || Array.isArray(query)) throw new Error();
+        for (const [key, value] of Object.entries(query)) {
+          if (typeof value !== 'string') throw new Error();
+          url.searchParams.set(key, value);
+        }
+      } catch {
+        throw new AppleClientError('invalid_input');
+      }
+
+      let token: string;
+      try {
+        token = tokens.getToken();
+      } catch {
+        throw new AppleClientError('authentication');
+      }
+
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const response = await fetchImpl(url, {
+          method: 'GET',
+          headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+          redirect: 'manual',
+          signal: controller.signal,
+        });
+        if (!response.ok) {
+          // Release the body without reading or exposing Apple's error payload.
+          void response.body?.cancel().catch(() => {});
+          const code = response.status === 401 ? 'authentication'
+            : response.status === 403 ? 'access_denied'
+            : response.status === 404 ? 'not_found'
+            : response.status === 429 ? 'rate_limited'
+            : 'upstream';
+          throw new AppleClientError(code);
+        }
+        return await response.json();
+      } catch (error) {
+        if (controller.signal.aborted) throw new AppleClientError('timeout');
+        if (error instanceof AppleClientError) throw error;
+        // Never retain underlying errors: they can contain tokens, URLs or private data.
+        throw new AppleClientError('upstream');
+      } finally {
+        clearTimeout(timer);
+      }
+    },
+  });
+}
