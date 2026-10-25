@@ -1,12 +1,12 @@
 # Tool overview
 
-Status: `list_apps` and `get_app` are implemented; the other tools below are planned. Tool names are project interfaces, not Apple API names or a promise of complete API coverage.
+Status: `list_apps`, `get_app`, `list_app_versions`, and `get_app_version` are implemented; the other tools below are planned. Tool names are project interfaces, not Apple API names or a promise of complete API coverage.
 
 See the [roadmap](roadmap.md) for priorities, later candidates, non-goals, and implementation acceptance. [Shared behavior](tools/shared-behavior.md) defines pagination, limits, validation, errors, and data boundaries once for all tools.
 
 ## Core MVP
 
-[`list_apps`](tools/list_apps.md) and [`get_app`](tools/get_app.md) are available over local stdio. Use their pages as templates when developing further tool contracts; move their details and API mappings to those pages.
+[`list_apps`](tools/list_apps.md), [`get_app`](tools/get_app.md), [`list_app_versions`](tools/list_app_versions.md), and [`get_app_version`](tools/get_app_version.md) are available over local stdio. Use their pages as templates when developing further tool contracts; move their details and API mappings to those pages.
 
 All list tools take optional `limit` and `cursor` as described in [shared behavior](tools/shared-behavior.md). IDs are opaque strings. Required inputs are shown without `?`. Returned fields are an allowlist, not raw upstream responses. Nullable Apple fields remain nullable.
 
@@ -14,8 +14,8 @@ All list tools take optional `limit` and `cursor` as described in [shared behavi
 | --- | --- | --- | --- |
 | [`list_apps`](tools/list_apps.md) | Which apps can this connection access? | `bundleId?`, pagination | App identity; see tool page for fields. |
 | [`get_app`](tools/get_app.md) | What app does this ID identify? | `appId` | Identity fields from [`list_apps`](tools/list_apps.md) for one app. No implicit loading of versions, builds, or localizations. |
-| `list_app_versions` | Which store versions exist for this app? | `appId`, `platform?`, pagination | Version ID, version string, platform, Apple state, release type, creation date. |
-| `get_app_version` | What is the status and selected build of this version? | `versionId` | Version details, selected build ID or null, earliest release date where available. No review credentials or contact details. |
+| [`list_app_versions`](tools/list_app_versions.md) | Which store versions exist for this app? | `appId`, `platform?`, pagination | Version ID, version string, platform, Apple state, release type, creation date. |
+| [`get_app_version`](tools/get_app_version.md) | What is the status and selected build of this version? | `versionId` | Version details, selected build ID or null, earliest release date where available. No review credentials or contact details. |
 | `list_app_infos` | Which app-information records exist for the current and upcoming release? | `appId`, pagination | App-info ID and Apple state, allowing explicit selection of the relevant record. |
 | `list_app_info_localizations` | What are this record's localized names and subtitles? | `appInfoId`, pagination | Localization ID, locale, name, subtitle, privacy-policy URL. |
 | `list_version_localizations` | What store text belongs to this version? | `versionId`, pagination | Localization ID, locale, description, keywords, promotional text, what's new, support URL, marketing URL. |
@@ -29,14 +29,12 @@ Apple can expose more than one app-info record for an app. Select the record exp
 
 ## Provisional Apple API mappings
 
-The implemented mappings live on the [list_apps](tools/list_apps.md) and [get_app](tools/get_app.md) tool pages; remaining mappings are below.
+Implemented mappings live on the individual tool pages linked above; remaining mappings are below.
 
 Only GET requests are permitted. Paths below are relative to `https://api.appstoreconnect.apple.com`. Validate exact field names, filters, relationship includes, state enums, and endpoint limits against the current Apple schema when implementing each tool. Apple examples may contain older state fields; do not derive the implementation schema solely from examples.
 
 | Tool | Read endpoint |
 | --- | --- |
-| `list_app_versions` | `GET /v1/apps/{appId}/appStoreVersions` |
-| `get_app_version` | `GET /v1/appStoreVersions/{versionId}`; resolve its `build` relationship through a supported include or a bounded related GET |
 | `list_app_infos` | `GET /v1/apps/{appId}/appInfos` |
 | `list_app_info_localizations` | `GET /v1/appInfos/{appInfoId}/appInfoLocalizations` |
 | `list_version_localizations` | `GET /v1/appStoreVersions/{versionId}/appStoreVersionLocalizations` |

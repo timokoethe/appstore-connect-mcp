@@ -3,7 +3,55 @@ import { PassThrough } from 'node:stream';
 import { test } from 'node:test';
 import { StdioServerTransport } from '@modelcontextprotocol/server/stdio';
 import { createServer } from '../build/server.js';
+import { AppleClientError } from '../build/apple/client.js';
 import { rpc } from './helpers/rpc.js';
+
+test('version tools discover, invoke and sanitize failures through MCP', async (t) => {
+  const calls = [];
+  const version = { id: 'v1', type: 'appStoreVersions', attributes: {
+    versionString: '1.0', platform: 'IOS', appVersionState: 'FUTURE_STATE',
+    releaseType: 'MANUAL', createdDate: null, earliestReleaseDate: null,
+    demoAccountPassword: 'synthetic-secret',
+  }, relationships: { build: { data: { id: 'b1', type: 'builds' } } } };
+  const server = createServer({ async get(path) {
+    calls.push(path);
+    if (path.includes('missing')) throw new AppleClientError('not_found');
+    if (path.includes('failure')) throw new Error('synthetic-secret');
+    return path.endsWith('/appStoreVersions') ? { data: [version], links: {} } : { data: version };
+  } });
+  const input = new PassThrough();
+  const output = new PassThrough();
+  const client = rpc(input, output);
+  await server.connect(new StdioServerTransport(input, output));
+  t.after(async () => { client.close(); await server.close(); });
+  await client.initialize();
+  const { tools } = await client.request('tools/list');
+  for (const [name, key, id] of [['list_app_versions', 'appId', 'app1'], ['get_app_version', 'versionId', 'v1']]) {
+    const tool = tools.find((tool) => tool.name === name);
+    assert.deepEqual(tool.inputSchema.required, [key]);
+    assert.equal(tool.inputSchema.additionalProperties, false);
+    assert.equal(tool.annotations.readOnlyHint, true);
+    const result = await client.request('tools/call', { name, arguments: { [key]: id } });
+    assert.deepEqual(JSON.parse(result.content[0].text), result.structuredContent);
+    const item = name === 'list_app_versions' ? result.structuredContent.items[0] : result.structuredContent.item;
+    assert.equal(item.appVersionState, 'FUTURE_STATE');
+    if (name === 'get_app_version') assert.equal(item.buildId, 'b1');
+    else assert.equal(result.structuredContent.nextCursor, null);
+    assert.ok(!JSON.stringify(result).includes('synthetic-secret'));
+    for (const [args, code] of [[{}, 'invalid_input'], [{ [key]: '../synthetic-secret' }, 'invalid_input'],
+      [{ [key]: 'missing' }, 'not_found'], [{ [key]: 'failure' }, 'upstream']]) {
+      const failure = await client.request('tools/call', { name, arguments: args });
+      assert.equal(failure.isError, true);
+      assert.equal(JSON.parse(failure.content[0].text).error.code, code);
+      assert.equal(failure.structuredContent, undefined);
+      assert.ok(!JSON.stringify(failure).includes('synthetic-secret'));
+    }
+  }
+  assert.deepEqual(calls, ['/v1/apps/app1/appStoreVersions', '/v1/apps/missing/appStoreVersions',
+    '/v1/apps/failure/appStoreVersions', '/v1/appStoreVersions/v1', '/v1/appStoreVersions/missing',
+    '/v1/appStoreVersions/failure']);
+  assert.equal(client.protocolError, false);
+});
 
 test('discovers and invokes list_apps over MCP stdio with safe errors and protocol-only output', async (t) => {
   let calls = 0;
@@ -15,7 +63,7 @@ test('discovers and invokes list_apps over MCP stdio with safe errors and protoc
   t.after(async () => { client.close(); await server.close(); });
   await client.initialize();
   const { tools } = await client.request('tools/list');
-  assert.deepEqual(tools.map((tool) => tool.name), ['list_apps', 'get_app']);
+  assert.deepEqual(tools.map((tool) => tool.name), ['list_apps', 'get_app', 'list_app_versions', 'get_app_version']);
   assert.equal(tools[0].name, 'list_apps');
   assert.equal(tools[0].annotations.readOnlyHint, true);
   assert.equal(tools[0].inputSchema.additionalProperties, false);
