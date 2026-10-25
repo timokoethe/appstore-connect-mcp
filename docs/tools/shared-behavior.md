@@ -1,6 +1,6 @@
 # Shared tool behavior
 
-Status: shared requirements for the planned tool set. The implemented `list_apps` policy is specified below. `list_app_versions` reuses the same pagination engine with its own tool-local cursor storage and app/platform binding; see its [contract](list_app_versions.md). These rules apply to every tool unless a documented endpoint limit is stricter. See the [tool overview](../tools.md) and [roadmap](../roadmap.md).
+Status: shared requirements for the planned tool set. The implemented `list_apps` policy is specified below. `list_app_versions`, `list_app_infos`, and `list_app_info_localizations` reuse the same pagination engine with their own tool-local cursor storage and parent/filter binding; see their individual [contracts](../tools.md). These rules apply to every tool unless a documented endpoint limit is stricter. See the [tool overview](../tools.md) and [roadmap](../roadmap.md).
 
 Only GET requests to Apple are permitted. Returned fields are an allowlist, not raw upstream responses. Nullable Apple fields remain nullable.
 
