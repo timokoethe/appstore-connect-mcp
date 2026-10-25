@@ -9,7 +9,7 @@ A TypeScript project for a read-only [Model Context Protocol (MCP)](https://mode
 
 ## Status
 
-Early development. The local stdio MCP server provides `list_apps` and `get_app` with validated inputs, bounded output, and safe errors. App lists support bounded pagination; `get_app` retrieves one app's identity by ID. Other tools remain planned.
+Early development. The local stdio MCP server provides `list_apps`, `get_app`, `list_app_versions`, and `get_app_version` with validated inputs, bounded output, and safe errors. Lists support bounded pagination; detail tools retrieve an explicitly selected app or store version. Other tools remain planned.
 
 See the [tool overview](docs/tools.md), [shared rules](docs/tools/shared-behavior.md), and [roadmap](docs/roadmap.md).
 
@@ -59,6 +59,10 @@ The server waits for MCP messages on stdin; stdout contains only protocol traffi
 
 Use `get_app` with `{ "appId": "1234567890" }` to retrieve one app by its ID. It returns `{ item }`
 with the same identity fields, without loading related resources. See the [get_app contract](docs/tools/get_app.md).
+
+Use `list_app_versions` with `{ "appId": "1234567890", "platform": "IOS" }` to inspect releases,
+then pass a returned item's `id` as `versionId` to `get_app_version` to read its selected build and release date.
+See the [version list](docs/tools/list_app_versions.md) and [version detail](docs/tools/get_app_version.md) contracts.
 
 ### Authentication
 
