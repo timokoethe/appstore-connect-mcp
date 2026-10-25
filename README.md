@@ -9,7 +9,7 @@ A TypeScript project for a read-only [Model Context Protocol (MCP)](https://mode
 
 ## Status
 
-Early development. The local stdio MCP server provides `list_apps`, `get_app`, `list_app_versions`, and `get_app_version` with validated inputs, bounded output, and safe errors. Lists support bounded pagination; detail tools retrieve an explicitly selected app or store version. Other tools remain planned.
+Early development. The local stdio MCP server provides `list_apps`, `get_app`, `list_app_versions`, `get_app_version`, `list_app_infos`, and `list_app_info_localizations` with validated inputs, bounded output, and safe errors. Lists support bounded pagination; app-info records are selected explicitly before reading localized names and subtitles. Other tools remain planned.
 
 See the [tool overview](docs/tools.md), [shared rules](docs/tools/shared-behavior.md), and [roadmap](docs/roadmap.md).
 
@@ -63,6 +63,11 @@ with the same identity fields, without loading related resources. See the [get_a
 Use `list_app_versions` with `{ "appId": "1234567890", "platform": "IOS" }` to inspect releases,
 then pass a returned item's `id` as `versionId` to `get_app_version` to read its selected build and release date.
 See the [version list](docs/tools/list_app_versions.md) and [version detail](docs/tools/get_app_version.md) contracts.
+
+Use `list_app_infos` with `{ "appId": "1234567890" }` to inspect the app's information records
+and their Apple states. Select a record explicitly, then call `list_app_info_localizations` with
+`{ "appInfoId": "selected-app-info-id" }` to read localized names, subtitles, and privacy-policy URLs.
+See the [app-info list](docs/tools/list_app_infos.md) and [localization list](docs/tools/list_app_info_localizations.md) contracts.
 
 ### Authentication
 

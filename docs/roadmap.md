@@ -1,6 +1,6 @@
 # Roadmap and MVP
 
-Status: `list_apps`, `get_app`, `list_app_versions`, `get_app_version`, and local stdio startup are implemented; remaining tools are planned. See the [tool overview](tools.md) for current contract proposals and the [shared behavior](tools/shared-behavior.md) for cross-tool requirements.
+Status: `list_apps`, `get_app`, `list_app_versions`, `get_app_version`, `list_app_infos`, `list_app_info_localizations`, and local stdio startup are implemented. Next in the core MVP: `list_version_localizations`, then `list_builds`. See the [tool overview](tools.md) for current contract proposals and the [shared behavior](tools/shared-behavior.md) for cross-tool requirements.
 
 ## Purpose and prioritization
 

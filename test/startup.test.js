@@ -37,7 +37,8 @@ test('compiled entry point starts stdio and discovers tools using a synthetic ke
   t.after(async () => { client.close(); const closed = once(child, 'close'); child.kill(); await closed; });
   await client.initialize();
   const { tools } = await client.request('tools/list');
-  assert.deepEqual(tools.map((tool) => tool.name), ['list_apps', 'get_app', 'list_app_versions', 'get_app_version']);
+  assert.deepEqual(tools.map((tool) => tool.name), ['list_apps', 'get_app', 'list_app_versions', 'get_app_version',
+    'list_app_infos', 'list_app_info_localizations']);
   assert.equal(stderr, '');
   assert.equal(client.protocolError, false);
 });

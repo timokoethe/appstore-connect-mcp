@@ -6,6 +6,63 @@ import { createServer } from '../build/server.js';
 import { AppleClientError } from '../build/apple/client.js';
 import { rpc } from './helpers/rpc.js';
 
+test('app-info tools discover and read localizations for an explicitly selected record over MCP', async (t) => {
+  const calls = [];
+  const server = createServer({ async get(path) {
+    calls.push(path);
+    if (path.includes('/missing/')) throw new AppleClientError('not_found');
+    if (path.includes('/failure/')) throw new Error('synthetic-secret');
+    if (path === '/v1/apps/app1/appInfos') return { data: [
+      { id: 'live', type: 'appInfos', attributes: { state: 'READY_FOR_DISTRIBUTION' } },
+      { id: 'draft', type: 'appInfos', attributes: { state: 'PREPARE_FOR_SUBMISSION', secret: 'synthetic-secret' } },
+    ], links: {} };
+    assert.equal(path, '/v1/appInfos/draft/appInfoLocalizations');
+    return { data: [{ id: 'de', type: 'appInfoLocalizations', attributes: {
+      locale: 'de-DE', name: 'Synthetic Draft', subtitle: null, privacyPolicyUrl: null, secret: 'synthetic-secret',
+    } }], links: {} };
+  } });
+  const input = new PassThrough();
+  const output = new PassThrough();
+  const client = rpc(input, output);
+  await server.connect(new StdioServerTransport(input, output));
+  t.after(async () => { client.close(); await server.close(); });
+  await client.initialize();
+  const { tools } = await client.request('tools/list');
+  for (const [name, key] of [['list_app_infos', 'appId'], ['list_app_info_localizations', 'appInfoId']]) {
+    const tool = tools.find((tool) => tool.name === name);
+    assert.deepEqual(tool.inputSchema.required, [key]);
+    assert.equal(tool.inputSchema.additionalProperties, false);
+    assert.deepEqual(tool.annotations, { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true });
+    for (const [args, code] of [[{}, 'invalid_input'], [{ [key]: '../synthetic-secret' }, 'invalid_input'],
+      [{ [key]: 'id', 'synthetic-secret': true }, 'invalid_input'],
+      [{ [key]: 'missing' }, 'not_found'], [{ [key]: 'failure' }, 'upstream']]) {
+      const failure = await client.request('tools/call', { name, arguments: args });
+      assert.equal(failure.isError, true);
+      assert.equal(JSON.parse(failure.content[0].text).error.code, code);
+      assert.equal(failure.structuredContent, undefined);
+      assert.ok(!JSON.stringify(failure).includes('synthetic-secret'));
+    }
+  }
+  const infos = await client.request('tools/call', { name: 'list_app_infos', arguments: { appId: 'app1' } });
+  assert.deepEqual(infos.structuredContent, { items: [
+    { id: 'live', state: 'READY_FOR_DISTRIBUTION' }, { id: 'draft', state: 'PREPARE_FOR_SUBMISSION' },
+  ], nextCursor: null });
+  const localizations = await client.request('tools/call', {
+    name: 'list_app_info_localizations', arguments: { appInfoId: infos.structuredContent.items[1].id },
+  });
+  assert.deepEqual(localizations.structuredContent, { items: [
+    { id: 'de', locale: 'de-DE', name: 'Synthetic Draft', subtitle: null, privacyPolicyUrl: null },
+  ], nextCursor: null });
+  for (const result of [infos, localizations]) {
+    assert.deepEqual(JSON.parse(result.content[0].text), result.structuredContent);
+    assert.ok(!JSON.stringify(result).includes('synthetic-secret'));
+  }
+  assert.deepEqual(calls, ['/v1/apps/missing/appInfos', '/v1/apps/failure/appInfos',
+    '/v1/appInfos/missing/appInfoLocalizations', '/v1/appInfos/failure/appInfoLocalizations',
+    '/v1/apps/app1/appInfos', '/v1/appInfos/draft/appInfoLocalizations']);
+  assert.equal(client.protocolError, false);
+});
+
 test('version tools discover, invoke and sanitize failures through MCP', async (t) => {
   const calls = [];
   const version = { id: 'v1', type: 'appStoreVersions', attributes: {
@@ -63,7 +120,8 @@ test('discovers and invokes list_apps over MCP stdio with safe errors and protoc
   t.after(async () => { client.close(); await server.close(); });
   await client.initialize();
   const { tools } = await client.request('tools/list');
-  assert.deepEqual(tools.map((tool) => tool.name), ['list_apps', 'get_app', 'list_app_versions', 'get_app_version']);
+  assert.deepEqual(tools.map((tool) => tool.name), ['list_apps', 'get_app', 'list_app_versions', 'get_app_version',
+    'list_app_infos', 'list_app_info_localizations']);
   assert.equal(tools[0].name, 'list_apps');
   assert.equal(tools[0].annotations.readOnlyHint, true);
   assert.equal(tools[0].inputSchema.additionalProperties, false);
