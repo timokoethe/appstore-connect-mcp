@@ -30,7 +30,7 @@ The result is `{ items, nextCursor }`:
 | `items[].primaryLocale` | `string \| null` | Primary locale. |
 | `nextCursor` | `string \| null` | Opaque continuation cursor, or `null` when there is no next page. |
 
-Null attributes are preserved. Missing attributes, incorrect types, or malformed resource IDs produce a safe `upstream` error; extra Apple fields are discarded. Access failures use the shared error categories.
+Null attributes are preserved. Missing attributes, incorrect types, or malformed resource IDs produce a safe `upstream` error; extra Apple fields are discarded. IDs use the same 1–255 character ASCII letter, digit, underscore, or hyphen constraint as [`get_app`](get_app.md). Access failures use the shared error categories.
 
 ## Example
 

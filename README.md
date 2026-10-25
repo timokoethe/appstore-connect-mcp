@@ -9,7 +9,7 @@ A TypeScript project for a read-only [Model Context Protocol (MCP)](https://mode
 
 ## Status
 
-Early development. The local stdio MCP server provides `list_apps` with validated inputs, bounded pagination, and safe errors. Other tools remain planned.
+Early development. The local stdio MCP server provides `list_apps` and `get_app` with validated inputs, bounded output, and safe errors. App lists support bounded pagination; `get_app` retrieves one app's identity by ID. Other tools remain planned.
 
 See the [tool overview](docs/tools.md), [shared rules](docs/tools/shared-behavior.md), and [roadmap](docs/roadmap.md).
 
@@ -56,6 +56,9 @@ node --env-file=.env.local build/index.js
 ```
 
 The server waits for MCP messages on stdin; stdout contains only protocol traffic. Start with `list_apps` arguments `{ "limit": 20 }`, then follow `nextCursor` explicitly. See the [tool contract](docs/tools/list_apps.md) for filters, limits, and cursor lifetime.
+
+Use `get_app` with `{ "appId": "1234567890" }` to retrieve one app by its ID. It returns `{ item }`
+with the same identity fields, without loading related resources. See the [get_app contract](docs/tools/get_app.md).
 
 ### Authentication
 

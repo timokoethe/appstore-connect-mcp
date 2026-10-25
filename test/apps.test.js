@@ -105,6 +105,7 @@ test('rejects unsafe or inconsistent continuation links before following them', 
 
 test('rejects malformed app data without leaking it', async () => {
   for (const raw of [{}, { data: [], links: null }, { data: [app('')], links: {} },
+    { data: [app('../123')], links: {} }, { data: [app('a'.repeat(256))], links: {} },
     { data: [{ ...app('1'), type: 'builds' }], links: {} },
     { data: [{ id: '1', type: 'apps', attributes: { name: 'must-not-return' } }], links: {} }]) {
     await assert.rejects(createListApps({ async get() { return raw; } })({}), code('upstream'));
