@@ -1,12 +1,12 @@
 # Tool overview
 
-Status: `list_apps`, `get_app`, `list_app_versions`, `get_app_version`, `list_app_infos`, and `list_app_info_localizations` are implemented; the other tools below are planned. Tool names are project interfaces, not Apple API names or a promise of complete API coverage.
+Status: `list_apps`, `get_app`, `list_app_versions`, `get_app_version`, `list_app_infos`, `list_app_info_localizations`, and `list_version_localizations` are implemented; the other tools below are planned. Tool names are project interfaces, not Apple API names or a promise of complete API coverage.
 
 See the [roadmap](roadmap.md) for priorities, later candidates, non-goals, and implementation acceptance. [Shared behavior](tools/shared-behavior.md) defines pagination, limits, validation, errors, and data boundaries once for all tools.
 
 ## Core MVP
 
-[`list_apps`](tools/list_apps.md), [`get_app`](tools/get_app.md), [`list_app_versions`](tools/list_app_versions.md), [`get_app_version`](tools/get_app_version.md), [`list_app_infos`](tools/list_app_infos.md), and [`list_app_info_localizations`](tools/list_app_info_localizations.md) are available over local stdio. Use their pages as templates when developing further tool contracts; move their details and API mappings to those pages.
+[`list_apps`](tools/list_apps.md), [`get_app`](tools/get_app.md), [`list_app_versions`](tools/list_app_versions.md), [`get_app_version`](tools/get_app_version.md), [`list_app_infos`](tools/list_app_infos.md), [`list_app_info_localizations`](tools/list_app_info_localizations.md), and [`list_version_localizations`](tools/list_version_localizations.md) are available over local stdio. Use their pages as templates when developing further tool contracts; move their details and API mappings to those pages.
 
 All list tools take optional `limit` and `cursor` as described in [shared behavior](tools/shared-behavior.md). IDs are opaque strings. Required inputs are shown without `?`. Returned fields are an allowlist, not raw upstream responses. Nullable Apple fields remain nullable.
 
@@ -18,7 +18,7 @@ All list tools take optional `limit` and `cursor` as described in [shared behavi
 | [`get_app_version`](tools/get_app_version.md) | What is the status and selected build of this version? | `versionId` | Version details, selected build ID or null, earliest release date where available. No review credentials or contact details. |
 | [`list_app_infos`](tools/list_app_infos.md) | Which app-information records exist for the current and upcoming release? | `appId`, pagination | App-info ID and Apple `state`, allowing explicit selection of the relevant record. |
 | [`list_app_info_localizations`](tools/list_app_info_localizations.md) | What are this record's localized names and subtitles? | `appInfoId`, pagination | Localization ID, locale, name, subtitle, privacy-policy URL. |
-| `list_version_localizations` | What store text belongs to this version? | `versionId`, pagination | Localization ID, locale, description, keywords, promotional text, what's new, support URL, marketing URL. |
+| [`list_version_localizations`](tools/list_version_localizations.md) | What store text belongs to this version? | `versionId`, pagination | Localization ID, locale, description, keywords, promotional text, what's new, support URL, marketing URL. |
 | `list_builds` | Which binaries were uploaded for this app? | `appId`, pagination | Build ID, build number, upload date, processing state, expiration date, expired flag, and prerelease-version ID with marketing version and platform where available. |
 
 The MVP deliberately distinguishes app identity, app information, store version, and build. Do not infer a build's marketing version from its build number, or treat a processed build as approved for external testing.
@@ -35,7 +35,6 @@ Only GET requests are permitted. Paths below are relative to `https://api.appsto
 
 | Tool | Read endpoint |
 | --- | --- |
-| `list_version_localizations` | `GET /v1/appStoreVersions/{versionId}/appStoreVersionLocalizations` |
 | `list_builds` | `GET /v1/builds` with required app filter and the supported `preReleaseVersion` include for marketing version and platform |
 
 Reference entry points: [store versions](https://developer.apple.com/documentation/appstoreconnectapi/get-v1-apps-_id_-appstoreversions), [version details](https://developer.apple.com/documentation/appstoreconnectapi/get-v1-appstoreversions-_id_), and [builds](https://developer.apple.com/documentation/appstoreconnectapi/get-v1-builds).
