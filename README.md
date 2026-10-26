@@ -9,7 +9,7 @@ A TypeScript project for a read-only [Model Context Protocol (MCP)](https://mode
 
 ## Status
 
-Early development. The local stdio MCP server provides `list_apps`, `get_app`, `list_app_versions`, `get_app_version`, `list_app_infos`, and `list_app_info_localizations` with validated inputs, bounded output, and safe errors. Lists support bounded pagination; app-info records are selected explicitly before reading localized names and subtitles. Other tools remain planned.
+Early development. The local stdio MCP server provides `list_apps`, `get_app`, `list_app_versions`, `get_app_version`, `list_app_infos`, `list_app_info_localizations`, and `list_version_localizations` with validated inputs, bounded output, and safe errors. Lists support bounded pagination; app-info records are selected explicitly before reading localized names and subtitles. Other tools remain planned.
 
 See the [tool overview](docs/tools.md), [shared rules](docs/tools/shared-behavior.md), and [roadmap](docs/roadmap.md).
 
@@ -68,6 +68,12 @@ Use `list_app_infos` with `{ "appId": "1234567890" }` to inspect the app's infor
 and their Apple states. Select a record explicitly, then call `list_app_info_localizations` with
 `{ "appInfoId": "selected-app-info-id" }` to read localized names, subtitles, and privacy-policy URLs.
 See the [app-info list](docs/tools/list_app_infos.md) and [localization list](docs/tools/list_app_info_localizations.md) contracts.
+
+Use `list_version_localizations` with `{ "versionId": "selected-version-id" }` to read
+localized descriptions, keywords, promotional text, release notes, and support/marketing URLs.
+Select the version explicitly using `list_app_versions`. Text is returned unchanged and is never
+executed; URLs are never fetched. See the [version-localization contract](docs/tools/list_version_localizations.md)
+for pagination and text-size limits.
 
 ### Authentication
 

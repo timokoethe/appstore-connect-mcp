@@ -10,7 +10,12 @@ export const paginationInput = {
   cursor: z.string().regex(/^[A-Za-z0-9_-]{32}$/).optional(),
 };
 export const pageLinks = z.object({ next: z.string().max(8192).nullable().optional() });
-export interface PaginationOptions { now?: () => number; maxOutputBytes?: number }
+export interface PaginationOptions {
+  now?: () => number;
+  maxOutputBytes?: number;
+  /** Fetch fixed upstream pages and serve caller-sized slices from the buffer. */
+  upstreamPageSize?: number;
+}
 const MESSAGES = {
   invalid_input: 'Invalid pagination configuration.',
   invalid_cursor: 'Cursor is invalid, expired, or belongs to different filters. Restart without a cursor.',
@@ -30,6 +35,15 @@ interface Position<T> {
   expiresAt: number;
 }
 
+function sameQueryValue(key: string, actual: string, expected: string | undefined): boolean {
+  if (actual === expected) return true;
+  if (!/^fields\[[A-Za-z0-9]+\]$/.test(key) || expected === undefined) return false;
+  // Apple may reorder sparse fieldsets in links. Keep our original query for the request.
+  const fields = actual.split(',');
+  return new Set(fields).size === fields.length
+    && JSON.stringify(fields.sort()) === JSON.stringify(expected.split(',').sort());
+}
+
 function nextQuery(path: string, link: string | null | undefined, query: Query): Query | null {
   if (link == null) return null;
   try {
@@ -38,7 +52,7 @@ function nextQuery(path: string, link: string | null | undefined, query: Query):
       || url.username || url.password || url.hash) throw new Error();
     const seen = new Set<string>();
     for (const [key, value] of url.searchParams) {
-      if (seen.has(key) || (key !== 'cursor' && value !== query[key])) throw new Error();
+      if (seen.has(key) || (key !== 'cursor' && !sameQueryValue(key, value, query[key]))) throw new Error();
       seen.add(key);
     }
     const cursor = url.searchParams.get('cursor');
@@ -53,10 +67,13 @@ function nextQuery(path: string, link: string | null | undefined, query: Query):
 /** One instance per tool and connection. Paths and query fields come from validated tool inputs. */
 export function createPaginator<T>(
   fetchPage: (path: string, query: Query) => Promise<{ items: T[]; next?: string | null }>,
-  { now = Date.now, maxOutputBytes = 32_768 }: PaginationOptions = {},
+  { now = Date.now, maxOutputBytes = 32_768, upstreamPageSize }: PaginationOptions = {},
   error: (code: PaginationError) => ToolError = (code) => new ToolError(code, MESSAGES[code]),
 ) {
   if (!Number.isSafeInteger(maxOutputBytes) || maxOutputBytes < 1) throw error('invalid_input');
+  if (upstreamPageSize !== undefined && (!Number.isInteger(upstreamPageSize) || upstreamPageSize < 1 || upstreamPageSize > 100)) {
+    throw error('invalid_input');
+  }
   const cursors = new Map<string, Position<T>>();
   async function load(path: string, query: Query): Promise<Page<T>> {
     const page = await fetchPage(path, query);
@@ -81,7 +98,7 @@ export function createPaginator<T>(
     } else {
       position = {
         scope, path, offset: 0, expiresAt: now() + CURSOR_TTL_MS,
-        query: { ...query, limit: String(limit) },
+        query: { ...query, limit: String(upstreamPageSize ?? limit) },
       };
     }
     // Share in-flight reads and keep failed output-budget calls replayable.
