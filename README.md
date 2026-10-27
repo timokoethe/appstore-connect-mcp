@@ -9,7 +9,7 @@ A TypeScript project for a read-only [Model Context Protocol (MCP)](https://mode
 
 ## Status
 
-Early development. The local stdio MCP server provides `list_apps`, `get_app`, `list_app_versions`, `get_app_version`, `list_app_infos`, `list_app_info_localizations`, and `list_version_localizations` with validated inputs, bounded output, and safe errors. Lists support bounded pagination; app-info records are selected explicitly before reading localized names and subtitles. Other tools remain planned.
+Early development. The local stdio MCP server provides the eight core MVP tools: `list_apps`, `get_app`, `list_app_versions`, `get_app_version`, `list_app_infos`, `list_app_info_localizations`, `list_version_localizations`, and `list_builds`, with validated inputs, bounded output, and safe errors. Lists support bounded pagination; app-info records are selected explicitly before reading localized names and subtitles. Other tools remain planned.
 
 See the [tool overview](docs/tools.md), [shared rules](docs/tools/shared-behavior.md), and [roadmap](docs/roadmap.md).
 
@@ -74,6 +74,11 @@ localized descriptions, keywords, promotional text, release notes, and support/m
 Select the version explicitly using `list_app_versions`. Text is returned unchanged and is never
 executed; URLs are never fetched. See the [version-localization contract](docs/tools/list_version_localizations.md)
 for pagination and text-size limits.
+
+Use `list_builds` with `{ "appId": "1234567890" }` to read uploaded builds, newest first,
+with processing and expiration state. Marketing version and platform come from included
+prerelease records; `contextUnavailable` marks missing or partial context. Processing state
+does not establish TestFlight availability. See the [build-list contract](docs/tools/list_builds.md).
 
 ### Authentication
 
