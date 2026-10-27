@@ -1,6 +1,6 @@
 # Tool overview
 
-Status: all eight core MVP tools below are implemented. Tool names are project interfaces, not Apple API names or a promise of complete API coverage. Later extensions are listed in the [roadmap](roadmap.md).
+Status: all eight core MVP tools and both screenshot-metadata tools below are implemented. Tool names are project interfaces, not Apple API names or a promise of complete API coverage. Later extensions are listed in the [roadmap](roadmap.md).
 
 See the [roadmap](roadmap.md) for priorities, later candidates, non-goals, and implementation acceptance. [Shared behavior](tools/shared-behavior.md) defines pagination, limits, validation, errors, and data boundaries once for all tools.
 
@@ -26,6 +26,17 @@ The MVP deliberately distinguishes app identity, app information, store version,
 `list_builds` resolves marketing version and platform from the build's `preReleaseVersion` relationship using an include in the list request, without per-build requests. If the related data is unavailable, it returns null for unavailable fields and `contextUnavailable: true`; it never substitutes the build number or guesses a platform. This does not depend on the later `get_build` tool.
 
 Apple can expose more than one app-info record for an app. Select the record explicitly; do not silently choose the first result. App-info localizations contain names and subtitles, while version localizations contain descriptions and release notes. The proposed generic `list_app_localizations` name is therefore replaced by two explicit tools. See Apple's [app-info records](https://developer.apple.com/documentation/appstoreconnectapi/get-v1-apps-_id_-appinfos), [app-info localizations](https://developer.apple.com/documentation/appstoreconnectapi/app-info-localizations), and [version localizations](https://developer.apple.com/documentation/appstoreconnectapi/app-store-version-localizations).
+
+## Screenshot metadata
+
+| Tool | Question | Inputs | Selected output |
+| --- | --- | --- | --- |
+| [`list_screenshot_sets`](tools/list_screenshot_sets.md) | Which screenshot display targets exist for this localization? | `versionLocalizationId`, pagination | Set ID and `screenshotDisplayType`. |
+| [`list_screenshots`](tools/list_screenshots.md) | Which screenshots belong to this set, in order? | `screenshotSetId`, pagination | Screenshot ID, filename, available width/height, and delivery state. |
+
+Select a version localization explicitly, discover its sets, then read each selected set's
+screenshots. Follow cursors to preserve Apple's order. These tools do not download images,
+return asset URLs/tokens or upload instructions, or establish submission readiness.
 
 ## Apple API mappings
 
