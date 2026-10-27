@@ -9,7 +9,7 @@ A TypeScript project for a read-only [Model Context Protocol (MCP)](https://mode
 
 ## Status
 
-Early development. The local stdio MCP server provides the eight core MVP tools: `list_apps`, `get_app`, `list_app_versions`, `get_app_version`, `list_app_infos`, `list_app_info_localizations`, `list_version_localizations`, and `list_builds`, with validated inputs, bounded output, and safe errors. Lists support bounded pagination; app-info records are selected explicitly before reading localized names and subtitles. Other tools remain planned.
+Early development. The local stdio MCP server provides the eight core MVP tools: `list_apps`, `get_app`, `list_app_versions`, `get_app_version`, `list_app_infos`, `list_app_info_localizations`, `list_version_localizations`, and `list_builds`, plus `list_screenshot_sets` and `list_screenshots` for ordered screenshot metadata. Tools have validated inputs, bounded output, and safe errors. Lists support bounded pagination; app-info records are selected explicitly before reading localized names and subtitles. Other tools remain planned.
 
 See the [tool overview](docs/tools.md), [shared rules](docs/tools/shared-behavior.md), and [roadmap](docs/roadmap.md).
 
@@ -79,6 +79,13 @@ Use `list_builds` with `{ "appId": "1234567890" }` to read uploaded builds, newe
 with processing and expiration state. Marketing version and platform come from included
 prerelease records; `contextUnavailable` marks missing or partial context. Processing state
 does not establish TestFlight availability. See the [build-list contract](docs/tools/list_builds.md).
+
+Use `list_screenshot_sets` with `{ "versionLocalizationId": "selected-localization-id" }`
+from `list_version_localizations`, then `list_screenshots` with
+`{ "screenshotSetId": "selected-set-id" }` to read filenames, available dimensions and
+delivery state in Apple order. Follow pagination explicitly. Image URLs, asset tokens and
+upload instructions are excluded; images are not downloaded. See the [set-list contract](docs/tools/list_screenshot_sets.md)
+and [screenshot-list contract](docs/tools/list_screenshots.md).
 
 ### Authentication
 
