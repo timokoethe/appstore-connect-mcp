@@ -1,6 +1,6 @@
 # Roadmap and MVP
 
-Status: `list_apps`, `get_app`, `list_app_versions`, `get_app_version`, `list_app_infos`, `list_app_info_localizations`, `list_version_localizations`, and local stdio startup are implemented. Next in the core MVP: `list_builds`. See the [tool overview](tools.md) for current contract proposals and the [shared behavior](tools/shared-behavior.md) for cross-tool requirements.
+Status: all eight core MVP tools (`list_apps`, `get_app`, `list_app_versions`, `get_app_version`, `list_app_infos`, `list_app_info_localizations`, `list_version_localizations`, and `list_builds`) and local stdio startup are implemented. Screenshot metadata is the next planned extension. See the [tool overview](tools.md) and the [shared behavior](tools/shared-behavior.md) for current contracts and cross-tool requirements.
 
 ## Purpose and prioritization
 
