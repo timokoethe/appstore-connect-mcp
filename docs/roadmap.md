@@ -1,6 +1,6 @@
 # Roadmap and MVP
 
-Status: all eight core MVP tools (`list_apps`, `get_app`, `list_app_versions`, `get_app_version`, `list_app_infos`, `list_app_info_localizations`, `list_version_localizations`, and `list_builds`), local stdio startup, and the screenshot-metadata extension (`list_screenshot_sets`, `list_screenshots`) are implemented. Customer reviews (`list_customer_reviews`) are implemented; detailed TestFlight inspection is next. See the [tool overview](tools.md) and the [shared behavior](tools/shared-behavior.md) for current contracts and cross-tool requirements.
+Status: all eight core MVP tools (`list_apps`, `get_app`, `list_app_versions`, `get_app_version`, `list_app_infos`, `list_app_info_localizations`, `list_version_localizations`, and `list_builds`), local stdio startup, and the screenshot-metadata extension (`list_screenshot_sets`, `list_screenshots`) are implemented. Customer reviews (`list_customer_reviews`) are implemented; `get_build` provides detailed build inspection with beta states; `list_beta_groups` is next. See the [tool overview](tools.md) and the [shared behavior](tools/shared-behavior.md) for current contracts and cross-tool requirements.
 
 ## Purpose and prioritization
 
@@ -32,7 +32,7 @@ These are candidates after the core MVP, not part of the first implementation mi
 | Tool | Inputs | Value and limits |
 | --- | --- | --- |
 | `list_customer_reviews` (implemented) | `appId`, optional rating/territory filters and date sort, pagination | Return review ID, rating, title, body, date, territory; omit reviewer nickname by default. Reviews are not an aggregate rating distribution. |
-| `get_build` | `buildId` | Add explicit build details and beta-status resources so processing, expiration, and testing eligibility remain distinct. |
+| `get_build` (implemented) | `buildId` | Add explicit build details and beta-status resources so processing, expiration, and testing eligibility remain distinct. |
 | `list_beta_groups` | `appId`, pagination | Inspect test groups without enumerating tester names or email addresses. |
 
 For screenshots, separate metadata inspection from downloading or rendering images. Image retrieval needs a later policy for validated asset destinations, redirects, size limits, and MIME types. Counting assets alone cannot prove submission readiness. Apple documents [screenshot sets and ordered screenshots](https://developer.apple.com/documentation/appstoreconnectapi/app-screenshot-sets).

@@ -53,3 +53,7 @@ Find an app with `list_apps`, choose a store version with `list_app_versions`, r
 ## Customer reviews
 
 [`list_customer_reviews`](tools/list_customer_reviews.md) reads bounded review pages with optional rating and territory filters and date sorting. Reviewer nicknames and responses are excluded.
+
+## Build details
+
+[`get_build`](tools/get_build.md) reads one selected build with prerelease context and separate internal/external beta states. Missing context is explicit; tester identities are excluded.
