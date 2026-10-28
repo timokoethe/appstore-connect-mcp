@@ -1,6 +1,6 @@
 # Tool overview
 
-Status: all eight core MVP tools and both screenshot-metadata tools below are implemented. Tool names are project interfaces, not Apple API names or a promise of complete API coverage. Later extensions are listed in the [roadmap](roadmap.md).
+Status: all eight core MVP tools and both screenshot-metadata tools and customer reviews below are implemented. Tool names are project interfaces, not Apple API names or a promise of complete API coverage. Later extensions are listed in the [roadmap](roadmap.md).
 
 See the [roadmap](roadmap.md) for priorities, later candidates, non-goals, and implementation acceptance. [Shared behavior](tools/shared-behavior.md) defines pagination, limits, validation, errors, and data boundaries once for all tools.
 
@@ -49,3 +49,7 @@ Reference entry points: [store versions](https://developer.apple.com/documentati
 ## Example workflow
 
 Find an app with `list_apps`, choose a store version with `list_app_versions`, read its content with `list_version_localizations`, then independently select an app-info record with `list_app_infos` and inspect its names/subtitles. Carry IDs between calls and paginate explicitly. This supports a metadata review without assuming live and draft records are interchangeable.
+
+## Customer reviews
+
+[`list_customer_reviews`](tools/list_customer_reviews.md) reads bounded review pages with optional rating and territory filters and date sorting. Reviewer nicknames and responses are excluded.

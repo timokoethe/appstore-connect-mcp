@@ -39,7 +39,7 @@ test('compiled entry point starts stdio and discovers tools using a synthetic ke
   const { tools } = await client.request('tools/list');
   assert.deepEqual(tools.map((tool) => tool.name), ['list_apps', 'get_app', 'list_app_versions', 'get_app_version',
     'list_app_infos', 'list_app_info_localizations', 'list_version_localizations', 'list_builds',
-    'list_screenshot_sets', 'list_screenshots']);
+    'list_screenshot_sets', 'list_screenshots', 'list_customer_reviews']);
   assert.equal(stderr, '');
   assert.equal(client.protocolError, false);
 });

@@ -1,6 +1,6 @@
 # Roadmap and MVP
 
-Status: all eight core MVP tools (`list_apps`, `get_app`, `list_app_versions`, `get_app_version`, `list_app_infos`, `list_app_info_localizations`, `list_version_localizations`, and `list_builds`), local stdio startup, and the screenshot-metadata extension (`list_screenshot_sets`, `list_screenshots`) are implemented. Customer reviews are the next planned extension. See the [tool overview](tools.md) and the [shared behavior](tools/shared-behavior.md) for current contracts and cross-tool requirements.
+Status: all eight core MVP tools (`list_apps`, `get_app`, `list_app_versions`, `get_app_version`, `list_app_infos`, `list_app_info_localizations`, `list_version_localizations`, and `list_builds`), local stdio startup, and the screenshot-metadata extension (`list_screenshot_sets`, `list_screenshots`) are implemented. Customer reviews (`list_customer_reviews`) are implemented; detailed TestFlight inspection is next. See the [tool overview](tools.md) and the [shared behavior](tools/shared-behavior.md) for current contracts and cross-tool requirements.
 
 ## Purpose and prioritization
 
@@ -15,7 +15,7 @@ Priority is based on usefulness for everyday release work, reuse by other workfl
 | App-level and version-level localizations | MVP | Enables review of names, subtitles, descriptions, keywords, and release notes. Both resource families are needed. |
 | Build inventory | MVP | Connects uploaded binaries to release work; processing status alone does not establish TestFlight availability. |
 | Screenshots | Metadata implemented | Set discovery and ordered metadata are available; image download/rendering remains deferred. |
-| Customer reviews | Next | Supports feedback triage with useful filters and bounded text output. |
+| Customer reviews | Implemented | Supports feedback triage with useful filters and bounded text output. |
 | Detailed TestFlight status and groups | Next | Useful after basic builds work; requires additional beta resources and careful field selection. |
 | Review submissions and phased release | Later | Adds release diagnostics beyond the version state; must not imply access to every App Review message. |
 | Pricing, territory availability, subscriptions, in-app purchases | Later | Valuable for commercial audits, but introduces several separate resource models. |
@@ -31,7 +31,7 @@ These are candidates after the core MVP, not part of the first implementation mi
 
 | Tool | Inputs | Value and limits |
 | --- | --- | --- |
-| `list_customer_reviews` | `appId`, optional rating/territory filters and date sort, pagination | Return review ID, rating, title, body, date, territory; omit reviewer nickname by default. Reviews are not an aggregate rating distribution. |
+| `list_customer_reviews` (implemented) | `appId`, optional rating/territory filters and date sort, pagination | Return review ID, rating, title, body, date, territory; omit reviewer nickname by default. Reviews are not an aggregate rating distribution. |
 | `get_build` | `buildId` | Add explicit build details and beta-status resources so processing, expiration, and testing eligibility remain distinct. |
 | `list_beta_groups` | `appId`, pagination | Inspect test groups without enumerating tester names or email addresses. |
 

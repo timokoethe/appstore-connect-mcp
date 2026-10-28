@@ -1,3 +1,4 @@
+import { createListCustomerReviews } from '../build/tools/list-customer-reviews.js';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { AppleClientError, createAppleClient } from '../build/apple/client.js';
@@ -16,6 +17,11 @@ const cases = [
     key: 'appInfoId', parent: 'info1', path: '/v1/appInfos/info1/appInfoLocalizations',
     type: 'appInfoLocalizations', fields: 'locale,name,subtitle,privacyPolicyUrl',
     attributes: { locale: 'de-DE', name: 'Synthetic App', subtitle: null, privacyPolicyUrl: 'https://example.invalid/privacy' },
+  },
+  {
+    name: 'list_customer_reviews', create: createListCustomerReviews, key: 'appId', parent: 'app1',
+    path: '/v1/apps/app1/customerReviews', type: 'customerReviews', fields: 'rating,title,body,createdDate,territory',
+    attributes: { rating: 5, title: 'Synthetic', body: 'Review', createdDate: null, territory: 'DEU' },
   },
 ];
 const resource = (tool, id, attributes = tool.attributes) => ({
@@ -68,7 +74,7 @@ for (const tool of cases) {
       assert.equal(url.origin, 'https://api.appstoreconnect.apple.com');
       assert.equal(url.pathname, tool.path);
       assert.equal(options.method, 'GET');
-      assert.deepEqual(Object.fromEntries(url.searchParams), { [`fields[${tool.type}]`]: tool.fields, limit: '20' });
+      assert.deepEqual(Object.fromEntries(url.searchParams), { [`fields[${tool.type}]`]: tool.fields, limit: '20', ...(tool.name === 'list_customer_reviews' ? { sort: '-createdDate' } : {}) });
       return Response.json(page([resource(tool, 'record1')]));
     } });
     assert.deepEqual(await tool.create(client)(input), {
@@ -145,7 +151,7 @@ for (const tool of cases) {
   });
 
   test(`${tool.name} distinguishes a single oversized UTF-8 record without truncation`, async () => {
-    const attributes = { ...tool.attributes, [Object.keys(tool.attributes)[0]]: 'é'.repeat(17_000) };
+    const attributes = { ...tool.attributes, [tool.name === 'list_customer_reviews' ? 'body' : Object.keys(tool.attributes)[0]]: 'é'.repeat(17_000) };
     const list = tool.create({ async get() { return page([resource(tool, 'record1', attributes)]); } });
     await assert.rejects(list({ ...input, limit: 1 }), code('record_too_large'));
   });
