@@ -2,7 +2,7 @@
 
 Status: **implemented** over local MCP stdio.
 
-See the [tool overview](../tools.md), [shared behavior](shared-behavior.md), and [implementation acceptance](../roadmap.md#implementation-sequence-and-acceptance).
+See the [tool overview](../tools.md), [shared behavior](shared-behavior.md), and [implementation acceptance](../roadmap.md#acceptance-for-new-tools).
 
 ## Purpose
 

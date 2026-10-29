@@ -1,6 +1,6 @@
 # Security Policy
 
-App Store Connect MCP is a TypeScript project intended to provide read-only access to Apple App Store Connect through MCP clients such as Claude Code and Codex. The server implementation is currently under development.
+App Store Connect MCP is a local stdio MCP server providing read-only access to Apple App Store Connect through MCP clients such as Claude Code and Codex.
 
 Please report issues that could expose App Store Connect credentials or private app data, allow unauthorized access, execute unintended code, or violate the server's read-only boundary.
 
@@ -29,11 +29,11 @@ We will review the report, validate the issue, and coordinate a fix before publi
 
 ## Security Expectations
 
-As the server is implemented, the following properties must hold:
+The following requirements apply to all contributions:
 
 - App Store Connect access remains read-only; MCP tools must not create, modify, or delete Apple resources.
 - Private signing keys and authentication tokens must not appear in source control, logs, errors, or MCP tool responses.
 - Tool arguments and responses from external services must be treated as untrusted input and must not cause unintended command execution or access to local files or network destinations.
 - Private app metadata must only be returned through the configured, authorized MCP connection.
 
-These are requirements for the implementation, not claims that the current development scaffold already enforces them.
+Remote hosting and multi-user authorization are outside the current design. App metadata returned by tools is shared with the configured MCP client; use a client and API key appropriate for that data.

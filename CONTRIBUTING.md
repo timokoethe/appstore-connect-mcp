@@ -8,6 +8,17 @@ Contributions to App Store Connect MCP are welcome.
 - Follow the existing TypeScript style and keep dependencies minimal.
 - Keep App Store Connect operations read-only. Never commit credentials, private keys, or private app data.
 
+Before opening a pull request, run:
+
+```sh
+npm run typecheck
+npm run build
+npm test
+```
+
+Automated tests must use synthetic data and make no network requests. Update the relevant
+[tool contracts](docs/tools.md) when changing tool behavior.
+
 ## Issues and Pull Requests
 
 - Check existing issues and pull requests before starting.
