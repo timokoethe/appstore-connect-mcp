@@ -114,3 +114,5 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines and [SECURITY
 ## License
 
 [MIT](LICENSE)
+
+Use [`list_beta_group_builds`](docs/tools/list_beta_group_builds.md) with a selected beta-group ID to inspect associated builds, then `get_build` for details.

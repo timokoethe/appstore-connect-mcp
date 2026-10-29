@@ -61,3 +61,5 @@ Find an app with `list_apps`, choose a store version with `list_app_versions`, r
 ## TestFlight groups
 
 [`list_beta_groups`](tools/list_beta_groups.md) lists groups for one app with names and nullable internal-group flags. No tester identities, public invitation links, or build assignments are returned.
+
+Use [`list_beta_group_builds`](tools/list_beta_group_builds.md) with a selected beta-group ID to inspect associated builds, then `get_build` for details.
