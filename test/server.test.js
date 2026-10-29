@@ -122,7 +122,7 @@ test('discovers and invokes list_apps over MCP stdio with safe errors and protoc
   const { tools } = await client.request('tools/list');
   assert.deepEqual(tools.map((tool) => tool.name), ['list_apps', 'get_app', 'list_app_versions', 'get_app_version',
     'list_app_infos', 'list_app_info_localizations', 'list_version_localizations', 'list_builds',
-    'list_screenshot_sets', 'list_screenshots', 'list_customer_reviews', 'get_build']);
+    'list_screenshot_sets', 'list_screenshots', 'list_customer_reviews', 'get_build', 'list_beta_groups']);
   assert.equal(tools[0].name, 'list_apps');
   assert.equal(tools[0].annotations.readOnlyHint, true);
   assert.equal(tools[0].inputSchema.additionalProperties, false);

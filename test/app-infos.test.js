@@ -1,3 +1,4 @@
+import { createListBetaGroups } from '../build/tools/list-beta-groups.js';
 import { createListCustomerReviews } from '../build/tools/list-customer-reviews.js';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
@@ -7,6 +8,11 @@ import { createListAppInfoLocalizations } from '../build/tools/list-app-info-loc
 import { ToolError } from '../build/tools/shared.js';
 
 const cases = [
+  {
+    name: 'list_beta_groups', create: createListBetaGroups, key: 'appId', parent: 'app1',
+    path: '/v1/apps/app1/betaGroups', type: 'betaGroups', fields: 'name,isInternalGroup',
+    attributes: { name: 'Synthetic group', isInternalGroup: false },
+  },
   {
     name: 'list_app_infos', create: createListAppInfos, key: 'appId', parent: 'app1',
     path: '/v1/apps/app1/appInfos', type: 'appInfos', fields: 'state',
@@ -39,8 +45,8 @@ const code = (expected) => (error) => {
 
 test('lists all app-info records without selecting one or replacing unknown states', async () => {
   const list = createListAppInfos({ async get() {
-    return page([resource(cases[0], 'live', { state: 'READY_FOR_DISTRIBUTION' }),
-      resource(cases[0], 'draft'), resource(cases[0], 'future', { state: 'FUTURE_STATE' })]);
+    return page([resource(cases[1], 'live', { state: 'READY_FOR_DISTRIBUTION' }),
+      resource(cases[1], 'draft'), resource(cases[1], 'future', { state: 'FUTURE_STATE' })]);
   } });
   assert.deepEqual(await list({ appId: 'app1' }), { items: [
     { id: 'live', state: 'READY_FOR_DISTRIBUTION' },
@@ -57,8 +63,8 @@ test('returns localization text and URLs unchanged without following or executin
   let calls = 0;
   const list = createListAppInfoLocalizations({ async get(path) {
     calls++;
-    assert.equal(path, cases[1].path);
-    return page([resource(cases[1], 'ja', attributes)]);
+    assert.equal(path, cases[2].path);
+    return page([resource(cases[2], 'ja', attributes)]);
   } });
   assert.deepEqual(await list({ appInfoId: 'info1' }), { items: [{ id: 'ja', ...attributes }], nextCursor: null });
   assert.equal(calls, 1);
