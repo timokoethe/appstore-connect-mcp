@@ -1,6 +1,6 @@
 # Roadmap and MVP
 
-Status: all eight core MVP tools (`list_apps`, `get_app`, `list_app_versions`, `get_app_version`, `list_app_infos`, `list_app_info_localizations`, `list_version_localizations`, and `list_builds`), local stdio startup, and the screenshot-metadata extension (`list_screenshot_sets`, `list_screenshots`) are implemented. Customer reviews (`list_customer_reviews`) are implemented; `get_build` provides detailed build inspection with beta states; `list_beta_groups` is implemented; build-to-group inspection is next. See the [tool overview](tools.md) and the [shared behavior](tools/shared-behavior.md) for current contracts and cross-tool requirements.
+Status: all eight core MVP tools (`list_apps`, `get_app`, `list_app_versions`, `get_app_version`, `list_app_infos`, `list_app_info_localizations`, `list_version_localizations`, and `list_builds`), local stdio startup, and the screenshot-metadata extension (`list_screenshot_sets`, `list_screenshots`) are implemented. Customer reviews (`list_customer_reviews`) are implemented; `get_build` provides detailed build inspection with beta states; `list_beta_groups` is implemented; group-to-build inspection (`list_beta_group_builds`) is implemented. See the [tool overview](tools.md) and the [shared behavior](tools/shared-behavior.md) for current contracts and cross-tool requirements.
 
 ## Purpose and prioritization
 
