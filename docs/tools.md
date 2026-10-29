@@ -57,3 +57,7 @@ Find an app with `list_apps`, choose a store version with `list_app_versions`, r
 ## Build details
 
 [`get_build`](tools/get_build.md) reads one selected build with prerelease context and separate internal/external beta states. Missing context is explicit; tester identities are excluded.
+
+## TestFlight groups
+
+[`list_beta_groups`](tools/list_beta_groups.md) lists groups for one app with names and nullable internal-group flags. No tester identities, public invitation links, or build assignments are returned.
