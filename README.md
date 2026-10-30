@@ -166,6 +166,9 @@ a synthetic key. It requires `npm ci` first and makes no Apple requests.
 
 ### Build an installable package
 
+The npm package is named `@timokoethe/appstoreconnect-mcp`; its executable is
+`appstoreconnect-mcp`. The GitHub repository name remains `appstoreconnect-mcp`.
+
 ```sh
 npm pack
 ```
@@ -175,7 +178,7 @@ documentation, and license; source files, tests, and local configuration are exc
 Install the generated tarball to use the `appstoreconnect-mcp` command:
 
 ```sh
-npm install --global ./appstoreconnect-mcp-1.0.0.tgz
+npm install --global ./timokoethe-appstoreconnect-mcp-1.0.0.tgz
 ```
 
 Set the three `ASC_*` environment variables before starting the command. It runs
@@ -202,7 +205,7 @@ or API-key role. Remove the package test setup when finished:
 
 ```sh
 codex mcp remove appstore-connect-package
-npm uninstall --global appstoreconnect-mcp
+npm uninstall --global @timokoethe/appstoreconnect-mcp
 ```
 
 The separate `appstore-connect` registration continues to use the local build.
