@@ -12,7 +12,7 @@ Only the latest public release and the current `main` branch are supported for s
 
 Please do not open a public issue for security reports.
 
-Private vulnerability reporting is enabled for this repository. Use [GitHub's private vulnerability reporting form](https://github.com/timokoethe/appstore-connect-mcp/security/advisories/new) to submit details securely.
+Private vulnerability reporting is enabled for this repository. Use [GitHub's private vulnerability reporting form](https://github.com/timokoethe/appstoreconnect-mcp/security/advisories/new) to submit details securely.
 
 Please include:
 

@@ -4,7 +4,7 @@ import { createToolRegistry } from './tools/registry.js';
 import { ToolError } from './tools/shared.js';
 
 export function createServer(client: AppleClient): Server {
-  const server = new Server({ name: 'appstore-connect-mcp', version: '1.0.0' }, { capabilities: { tools: {} } });
+  const server = new Server({ name: 'appstoreconnect-mcp', version: '1.0.0' }, { capabilities: { tools: {} } });
   const tools = createToolRegistry(client);
   server.setRequestHandler('tools/list', () => ({ tools: [...tools.values()].map((tool) => tool.definition) }));
   // Validate here so SDK schema errors cannot echo caller-supplied values or keys.

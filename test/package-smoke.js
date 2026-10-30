@@ -59,7 +59,7 @@ test('packed CLI installs offline and discovers tools over stdio', { timeout: 90
   const keyPath = join(dir, 'synthetic.p8');
   const { privateKey } = generateKeyPairSync('ec', { namedCurve: 'prime256v1' });
   await writeFile(keyPath, privateKey.export({ type: 'pkcs8', format: 'pem' }), { mode: 0o600 });
-  const child = spawn(join(dir, 'node_modules/.bin/appstore-connect-mcp'), [], {
+  const child = spawn(join(dir, 'node_modules/.bin/appstoreconnect-mcp'), [], {
     cwd: dir,
     env: {
       PATH: `${dirname(process.execPath)}${delimiter}${process.env.PATH ?? ''}`,

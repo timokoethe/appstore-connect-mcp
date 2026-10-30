@@ -25,8 +25,8 @@ Lists support bounded pagination. Screenshot tools return filenames, dimensions,
 Requires **Node.js 20+**, **npm**, and an App Store Connect **team API key**. Individual API keys are not supported.
 
 ```sh
-git clone https://github.com/timokoethe/appstore-connect-mcp.git
-cd appstore-connect-mcp
+git clone https://github.com/timokoethe/appstoreconnect-mcp.git
+cd appstoreconnect-mcp
 npm ci
 npm run build
 ```
@@ -42,7 +42,7 @@ codex mcp add appstore-connect \
   --env ASC_ISSUER_ID=YOUR_ISSUER_UUID \
   --env ASC_PRIVATE_KEY_PATH=/absolute/path/to/AuthKey.p8 \
   -- "$(command -v node)" \
-  /absolute/path/to/appstore-connect-mcp/build/index.js
+  /absolute/path/to/appstoreconnect-mcp/build/index.js
 ```
 
 This shell example uses macOS/Linux syntax and records the absolute Node.js path.
@@ -70,7 +70,7 @@ Add the server to your client's configuration, replacing the placeholder paths a
   "mcpServers": {
     "appstore-connect": {
       "command": "node",
-      "args": ["/absolute/path/to/appstore-connect-mcp/build/index.js"],
+      "args": ["/absolute/path/to/appstoreconnect-mcp/build/index.js"],
       "env": {
         "ASC_KEY_ID": "YOUR_KEY_ID",
         "ASC_ISSUER_ID": "YOUR_ISSUER_UUID",
@@ -152,7 +152,7 @@ npm test
 npm run test:package
 ```
 
-Tests use synthetic data and make no network requests. See [CONTRIBUTING.md](https://github.com/timokoethe/appstore-connect-mcp/blob/main/CONTRIBUTING.md) for contribution guidelines.
+Tests use synthetic data and make no network requests. See [CONTRIBUTING.md](https://github.com/timokoethe/appstoreconnect-mcp/blob/main/CONTRIBUTING.md) for contribution guidelines.
 
 GitHub Actions runs these checks on Ubuntu with Node.js 20, 22, 24, and 26 for
 pull requests, including new commits pushed to an open pull request. The package
@@ -168,10 +168,10 @@ npm pack
 
 Packing removes the previous `build/` directory and rebuilds the server. The package includes the compiled server,
 documentation, and license; source files, tests, and local configuration are excluded.
-Install the generated tarball to use the `appstore-connect-mcp` command:
+Install the generated tarball to use the `appstoreconnect-mcp` command:
 
 ```sh
-npm install --global ./appstore-connect-mcp-1.0.0.tgz
+npm install --global ./appstoreconnect-mcp-1.0.0.tgz
 ```
 
 Set the three `ASC_*` environment variables before starting the command. It runs
@@ -185,7 +185,7 @@ codex mcp add appstore-connect-package \
   --env ASC_KEY_ID=YOUR_KEY_ID \
   --env ASC_ISSUER_ID=YOUR_ISSUER_UUID \
   --env ASC_PRIVATE_KEY_PATH=/absolute/path/to/AuthKey.p8 \
-  -- "$(command -v appstore-connect-mcp)"
+  -- "$(command -v appstoreconnect-mcp)"
 ```
 
 Restart Codex, open a new conversation, and ask:
@@ -198,7 +198,7 @@ or API-key role. Remove the package test setup when finished:
 
 ```sh
 codex mcp remove appstore-connect-package
-npm uninstall --global appstore-connect-mcp
+npm uninstall --global appstoreconnect-mcp
 ```
 
 The separate `appstore-connect` registration continues to use the local build.

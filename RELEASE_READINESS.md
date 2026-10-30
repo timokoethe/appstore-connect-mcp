@@ -8,7 +8,7 @@ getestet. Es wurde in dieser Arbeit nichts auf npm veröffentlicht.
 
 ## Erledigt
 
-- [x] `bin`-Eintrag und Node-Shebang für `appstore-connect-mcp` ergänzt.
+- [x] `bin`-Eintrag und Node-Shebang für `appstoreconnect-mcp` ergänzt.
 - [x] `prepack` bereinigt `build/` und baut anschließend neu.
 - [x] Paketinhalt über `files` auf Build, Dokumentation und Security Policy begrenzt;
   README, LICENSE und package.json werden ebenfalls gepackt.
@@ -22,18 +22,19 @@ getestet. Es wurde in dieser Arbeit nichts auf npm veröffentlicht.
 - [x] Beide Codex-Installationswege und Testschritte in der README dokumentiert.
 - [x] GitHub-Actions-Workflow für Node 20, 22, 24 und 26 eingerichtet.
 - [x] Automatisierten Offline-Paket-Smoke-Test ergänzt und in CI eingebunden.
+- [x] PR-CI auf allen vier Node-Versionen erfolgreich (vom Maintainer bestätigt).
+- [x] Dependency-Audit gegen die aktuelle npm-Advisory-Datenbank durchgeführt:
+  keine bekannten Sicherheitslücken.
+- [x] Aktuellen Repository-Arbeitsstand und gesamte lokal erreichbare Git-Historie
+  mit Gitleaks geprüft: keine Secret-Treffer.
 
 Der CLI-Einstieg für eine spätere npm-/npx-Verteilung ist vorhanden. Ein Aufruf aus
 der öffentlichen npm-Registry wurde hier nicht geprüft.
 
 ## Noch offen vor dem öffentlichen Release
 
-- [ ] Ersten GitHub-Actions-Lauf auf allen vier Node-Versionen erfolgreich abschließen;
-  die Workflow-Konfiguration ist vorhanden, lokal wurde bisher Node 26 geprüft.
 - [ ] Claude-Code-Installation testen und konkret dokumentieren; bisher ist dafür
   nur das generische `mcpServers`-JSON-Beispiel vorhanden.
-- [ ] Dependency-Audit mit aktueller Advisory-Datenbank durchführen und bewerten.
-- [ ] Git-Historie vollständig auf versehentlich eingecheckte Secrets prüfen.
 - [ ] Release-Tag und kurze Release Notes vorbereiten.
 
 Mehr Tool-Abdeckung ist für den ersten Release nicht erforderlich. Der
@@ -56,7 +57,29 @@ synthetische Daten ohne Netzwerkzugriffe. Beim manuellen Installationstest wurde
 Paketabhängigkeiten über npm geladen. Die manuellen Apple-Tests belegen den
 getesteten Ablauf, nicht alle Tools, Plattformen oder Rollenberechtigungen.
 
-Ein vollständiger Security-Audit und ein vollständiger Secret-Scan der Git-Historie
-wurden nicht durchgeführt. Bei der bisherigen Code-Durchsicht wurde kein konkreter
+## Dependency-Audit und Secret-Scan
+
+Geprüfter Commit: `8081bb3`, am 30. Oktober 2026.
+
+- `npm audit --json` gegen die npm-Registry: 0 bekannte Sicherheitslücken,
+  einschließlich Entwicklungsabhängigkeiten. Keine Dependency-Änderungen nötig.
+- Gitleaks 8.30.1 aus dem offiziellen GitHub-Release; Archiv gegen die veröffentlichte
+  SHA-256-Prüfsumme geprüft. Standardregeln, vollständige Redaktion und keine
+  Unterdrückung durch `gitleaks:allow`-Kommentare verwendet.
+- Git-Scan mit `--log-opts='--all --full-history -m'`: keine Treffer.
+- Ergänzend alle 195 erreichbaren Blob-Inhalte und 30 Commit-Objekte separat
+  gescannt, einschließlich früherer Dateistände und Commit-Nachrichten: keine Treffer.
+- 76 versionierte bzw. nicht ignorierte Dateien des Arbeitsstands gescannt:
+  keine Treffer. In der Historie außerdem keine `.p8`-, `.pem`-, `.key`- oder
+  `.env`-Dateipfade gefunden.
+
+Der Checkout ist nicht shallow. Der Scan umfasst alle lokal vorhandenen Git-Refs;
+nicht erreichbare Objekte, nur remote vorhandene Refs und absichtlich ignorierte
+lokale Dateien sind nicht Teil dieser Aussage. Secret-Erkennung beruht auf Mustern
+und ist kein Beweis, dass beliebige geheime Daten ausgeschlossen sind.
+Scan-Berichte und Scanner wurden außerhalb des Repositorys temporär abgelegt.
+
+Ein vollständiger Security-Audit wurde nicht durchgeführt.
+Bei der bisherigen Code-Durchsicht wurde kein konkreter
 Release-Blocker in Authentifizierung oder GET-only-Transport gefunden; das ersetzt
 keinen vollständigen Security-Audit.
