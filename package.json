@@ -24,14 +24,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/timokoethe/appstore-connect-mcp.git"
+    "url": "git+https://github.com/timokoethe/appstoreconnect-mcp.git"
   },
   "keywords": [],
   "type": "module",
   "bugs": {
-    "url": "https://github.com/timokoethe/appstore-connect-mcp/issues"
+    "url": "https://github.com/timokoethe/appstoreconnect-mcp/issues"
   },
-  "homepage": "https://github.com/timokoethe/appstore-connect-mcp#readme",
+  "homepage": "https://github.com/timokoethe/appstoreconnect-mcp#readme",
   "dependencies": {
     "@modelcontextprotocol/server": "^2.3.1",
     "zod": "^4.6.7"

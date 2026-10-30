@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for sharing an idea for appstore-connect-mcp.
+        Thanks for sharing an idea for appstoreconnect-mcp.
         The project is a lightweight, read-only MCP server for Apple App Store Connect. Keep that scope in mind when describing your idea.
   - type: textarea
     id: problem

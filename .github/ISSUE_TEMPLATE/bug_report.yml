@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for helping improve appstore-connect-mcp.
+        Thanks for helping improve appstoreconnect-mcp.
         Remove API keys, private key contents, tokens, and sensitive app or account data before submitting logs or configuration.
   - type: textarea
     id: summary
