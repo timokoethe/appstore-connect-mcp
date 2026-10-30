@@ -14,10 +14,17 @@ Before opening a pull request, run:
 npm run typecheck
 npm run build
 npm test
+npm run test:package
 ```
 
 Automated tests must use synthetic data and make no network requests. Update the relevant
 [tool contracts](docs/tools.md) when changing tool behavior.
+
+GitHub Actions runs all four checks on Ubuntu with Node.js 20, 22, 24, and 26.
+Run `npm ci` before the package smoke test: it installs the packed CLI offline
+using the same locked dependency versions from the npm cache. The smoke test
+checks package contents, removal of stale build artifacts, and MCP initialization,
+discovery, and invalid-input handling with a synthetic signing key.
 
 ## Issues and Pull Requests
 

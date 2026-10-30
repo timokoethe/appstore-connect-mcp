@@ -20,15 +20,16 @@ getestet. Es wurde in dieser Arbeit nichts auf npm veröffentlicht.
 - [x] Lokalen Build und installiertes Paket in Codex mit Apple-Zugriff manuell getestet
   (vom Maintainer bestätigt).
 - [x] Beide Codex-Installationswege und Testschritte in der README dokumentiert.
+- [x] GitHub-Actions-Workflow für Node 20, 22, 24 und 26 eingerichtet.
+- [x] Automatisierten Offline-Paket-Smoke-Test ergänzt und in CI eingebunden.
 
 Der CLI-Einstieg für eine spätere npm-/npx-Verteilung ist vorhanden. Ein Aufruf aus
 der öffentlichen npm-Registry wurde hier nicht geprüft.
 
 ## Noch offen vor dem öffentlichen Release
 
-- [ ] CI mit `npm ci`, Typecheck, Build und Tests auf den unterstützten Node-Versionen.
-- [ ] Automatisierter Paket-Smoke-Test in CI; bisher manuell geprüft.
-- [ ] Kompatibilität mit der zugesagten Node-Mindestversion tatsächlich testen.
+- [ ] Ersten GitHub-Actions-Lauf auf allen vier Node-Versionen erfolgreich abschließen;
+  die Workflow-Konfiguration ist vorhanden, lokal wurde bisher Node 26 geprüft.
 - [ ] Claude-Code-Installation testen und konkret dokumentieren; bisher ist dafür
   nur das generische `mcpServers`-JSON-Beispiel vorhanden.
 - [ ] Dependency-Audit mit aktueller Advisory-Datenbank durchführen und bewerten.
@@ -45,6 +46,7 @@ Funktionsumfang bleibt auf lesenden Zugriff begrenzt.
 | `npm run typecheck` | Erfolgreich |
 | `npm run build` | Erfolgreich |
 | `npm test` | 215 Tests erfolgreich, keine Fehler |
+| `npm run test:package` | Offline-Installation und CLI-Smoke-Test erfolgreich |
 | Paketprüfung | CLI und Dokumentation enthalten; alte Build-Artefakte entfernt |
 | Isolierte Paketinstallation und CLI-Start | MCP-Initialisierung und Erkennung aller 14 Tools erfolgreich |
 | Codex mit Apple-Zugriff | Lokaler Build und installiertes Paket laut Maintainer erfolgreich |
