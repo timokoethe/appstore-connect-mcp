@@ -33,14 +33,14 @@ codex mcp add appstoreconnect-mcp \
   --env ASC_KEY_ID=YOUR_KEY_ID \
   --env ASC_ISSUER_ID=YOUR_ISSUER_UUID \
   --env ASC_PRIVATE_KEY_PATH=/absolute/path/to/AuthKey.p8 \
-  -- npx -y @timokoethe/appstoreconnect-mcp@1.0.0
+  -- npx -y @timokoethe/appstoreconnect-mcp@1.0.1
 ```
 
 Check registration with `codex mcp list`, restart Codex, and open a new conversation:
 
 > Use appstoreconnect-mcp and list my apps.
 
-`npx` downloads the package on first use and runs version `1.0.0` locally. To upgrade,
+`npx` downloads the package on first use and runs version `1.0.1` locally. To upgrade,
 change the pinned version in your client configuration and restart the server.
 For other clients, see [client setup](docs/setup.md#other-mcp-clients).
 

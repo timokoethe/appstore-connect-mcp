@@ -80,7 +80,8 @@ test('packed CLI installs offline and discovers tools over stdio', { timeout: 90
     }
   });
   await once(child, 'spawn');
-  await client.initialize();
+  const initialized = await client.initialize();
+  assert.equal(initialized.serverInfo.version, manifest.version);
   const { tools } = await client.request('tools/list');
   const { createToolRegistry } = await import('../build/tools/registry.js');
   assert.deepEqual(tools.map(({ name }) => name), [...createToolRegistry({}).keys()]);

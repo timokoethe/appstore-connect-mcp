@@ -4,7 +4,8 @@ Stand: 30. Oktober 2026
 
 CLI-Einstieg und Paket-Build sind umgesetzt. Sowohl der lokale Build als auch das
 installierte Paket wurden vom Maintainer erfolgreich in Codex mit Apple-Zugriff
-getestet. Es wurde in dieser Arbeit nichts auf npm veröffentlicht.
+getestet. Version 1.0.0 ist auf GitHub (vom Maintainer bestätigt) und unter
+`@timokoethe/appstoreconnect-mcp` auf npm veröffentlicht. Version 1.0.1 wird vorbereitet.
 
 ## Erledigt
 
@@ -28,10 +29,10 @@ getestet. Es wurde in dieser Arbeit nichts auf npm veröffentlicht.
 - [x] Aktuellen Repository-Arbeitsstand und gesamte lokal erreichbare Git-Historie
   mit Gitleaks geprüft: keine Secret-Treffer.
 
-Der CLI-Einstieg für eine spätere npm-/npx-Verteilung ist vorhanden. Ein Aufruf aus
-der öffentlichen npm-Registry wurde hier nicht geprüft.
+Der npm-Eintrag für Version 1.0.0 wurde bestätigt. Ein Live-Test über npx aus der
+öffentlichen npm-Registry wurde hier nicht durchgeführt.
 
-## Noch offen vor dem öffentlichen Release
+## Noch offen für Version 1.0.1
 
 - [ ] Release-Tag auf dem vorgesehenen Commit pushen und automatisch erstellte
   Release Notes prüfen. Der Workflow und der Abgleich mit `package.json.version`

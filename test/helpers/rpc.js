@@ -25,8 +25,9 @@ export function rpc(input, output) {
       return response.result;
     },
     async initialize() {
-      await this.request('initialize', { protocolVersion: '2025-11-25', capabilities: {}, clientInfo: { name: 'test', version: '1' } });
+      const result = await this.request('initialize', { protocolVersion: '2025-11-25', capabilities: {}, clientInfo: { name: 'test', version: '1' } });
       input.write(JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initialized' }) + '\n');
+      return result;
     },
     close() { lines.close(); },
     get protocolError() { return protocolError; },
