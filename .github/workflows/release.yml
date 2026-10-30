@@ -1,0 +1,135 @@
+name: Release
+run-name: Release ${{ github.ref_name }}
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Create GitHub release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      is_prerelease: ${{ steps.metadata.outputs.is_prerelease }}
+    env:
+      RELEASE_TAG: ${{ github.ref_name }}
+
+    steps:
+      - name: Check out tag
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate release tag
+        id: metadata
+        run: |
+          if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-beta[1-9][0-9]*)?$ ]]; then
+            echo "::error::Tag must match vX.Y.Z or vX.Y.Z-betaN with N starting at 1, for example v1.2.3 or v1.2.3-beta1."
+            exit 1
+          fi
+
+          RELEASE_VERSION="${RELEASE_TAG#v}"
+          PACKAGE_VERSION="$(node -p "JSON.parse(require('node:fs').readFileSync('package.json', 'utf8')).version")"
+          if [[ "$RELEASE_VERSION" != "$PACKAGE_VERSION" ]]; then
+            echo "::error::Release tag version must match package.json version ($PACKAGE_VERSION)."
+            exit 1
+          fi
+
+          IS_PRERELEASE=false
+          if [[ "$RELEASE_TAG" =~ -beta[1-9][0-9]*$ ]]; then
+            IS_PRERELEASE=true
+          fi
+
+          echo "release_version=$RELEASE_VERSION" >> "$GITHUB_OUTPUT"
+          echo "is_prerelease=$IS_PRERELEASE" >> "$GITHUB_OUTPUT"
+
+      - name: Generate release notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          IS_PRERELEASE: ${{ steps.metadata.outputs.is_prerelease }}
+          RELEASE_VERSION: ${{ steps.metadata.outputs.release_version }}
+        run: |
+          RELEASE_NOTES_PATH="$RUNNER_TEMP/release-notes.md"
+          GENERATED_NOTES_PATH="$RUNNER_TEMP/generated-release-notes.md"
+          generate_notes_args=(
+            --method POST
+            "repos/$GITHUB_REPOSITORY/releases/generate-notes"
+            -f "tag_name=$RELEASE_TAG"
+            -f "target_commitish=$GITHUB_SHA"
+          )
+
+          if [[ "$IS_PRERELEASE" == "true" ]]; then
+            PREVIOUS_RELEASE_TAG="$(
+              git describe --tags --abbrev=0 \
+                --match "v[0-9]*.[0-9]*.[0-9]*" \
+                "${RELEASE_TAG}^" 2>/dev/null || true
+            )"
+
+            if [[ -n "$PREVIOUS_RELEASE_TAG" ]]; then
+              generate_notes_args+=(-f "previous_tag_name=$PREVIOUS_RELEASE_TAG")
+            fi
+          else
+            PREVIOUS_STABLE_TAG="$(
+              git describe --tags --abbrev=0 \
+                --match "v[0-9]*.[0-9]*.[0-9]*" \
+                --exclude "*-beta*" \
+                "${RELEASE_TAG}^" 2>/dev/null || true
+            )"
+
+            if [[ -n "$PREVIOUS_STABLE_TAG" ]]; then
+              generate_notes_args+=(-f "previous_tag_name=$PREVIOUS_STABLE_TAG")
+            fi
+          fi
+
+          gh api "${generate_notes_args[@]}" --jq '.body' > "$GENERATED_NOTES_PATH"
+
+          perl -0pi -e "s/^## What's Changed\R+//m; s/^## New Contributors\R+(?:^\* .*\R)+\R?//mg" "$GENERATED_NOTES_PATH"
+          perl -0pi -e 's/^## /### /mg' "$GENERATED_NOTES_PATH"
+          perl -0pi -e 's{https://github\.com/([^/\s]+)/([^/\s]+)/pull/([0-9]+)}{[#$3](https://github.com/$1/$2/pull/$3)}g' "$GENERATED_NOTES_PATH"
+
+          if [[ "$IS_PRERELEASE" == "true" ]]; then
+            BETA_NUMBER="${RELEASE_TAG##*-beta}"
+            {
+              echo "## 🚧 Beta $BETA_NUMBER - Early Preview"
+              echo
+              cat "$GENERATED_NOTES_PATH"
+              echo
+              echo "This version is an early preview of an upcoming release and may contain bugs or incomplete behavior."
+            } > "$RELEASE_NOTES_PATH"
+          else
+            {
+              echo "## Version $RELEASE_VERSION"
+              echo
+              cat "$GENERATED_NOTES_PATH"
+            } > "$RELEASE_NOTES_PATH"
+          fi
+
+          echo "RELEASE_NOTES_PATH=$RELEASE_NOTES_PATH" >> "$GITHUB_ENV"
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          IS_PRERELEASE: ${{ steps.metadata.outputs.is_prerelease }}
+        run: |
+          args=(
+            "$RELEASE_TAG"
+            --verify-tag
+            --notes-file "$RELEASE_NOTES_PATH"
+            --title "$RELEASE_TAG"
+          )
+
+          if [[ "$IS_PRERELEASE" == "true" ]]; then
+            args+=(--prerelease)
+          fi
+
+          gh release create "${args[@]}"
