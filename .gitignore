@@ -3,6 +3,7 @@
 /build/
 /appstore-connect-mcp-*.tgz
 /appstoreconnect-mcp-*.tgz
+/timokoethe-appstoreconnect-mcp-*.tgz
 /coverage/
 *.tsbuildinfo
 npm-debug.log*

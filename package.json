@@ -1,5 +1,5 @@
 {
-  "name": "appstoreconnect-mcp",
+  "name": "@timokoethe/appstoreconnect-mcp",
   "publishConfig": {
     "access": "public"
   },
