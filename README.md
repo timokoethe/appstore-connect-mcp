@@ -136,9 +136,16 @@ Source code lives in `src/`. Rebuild after source changes.
 npm run typecheck
 npm run build
 npm test
+npm run test:package
 ```
 
 Tests use synthetic data and make no network requests. See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
+
+GitHub Actions runs these checks on Ubuntu with Node.js 20, 22, 24, and 26 for
+pull requests, including new commits pushed to an open pull request. The package
+smoke test packs the server, checks its contents, installs it offline using the
+lockfile versions cached by `npm ci`, and checks the installed CLI over MCP with
+a synthetic key. It requires `npm ci` first and makes no Apple requests.
 
 ### Build an installable package
 

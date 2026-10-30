@@ -16,7 +16,8 @@
     "prepack": "node --input-type=module -e \"import { rmSync } from 'node:fs'; rmSync('build', { recursive: true, force: true });\" && npm run build",
     "start": "node build/index.js",
     "typecheck": "tsc --noEmit",
-    "test": "npm run build && node --test test/*.test.js"
+    "test": "npm run build && node --test test/*.test.js",
+    "test:package": "node --test test/package-smoke.js"
   },
   "repository": {
     "type": "git",
