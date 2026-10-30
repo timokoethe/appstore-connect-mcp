@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { StdioServerTransport } from '@modelcontextprotocol/server/stdio';
 import { createTokenProvider } from './apple/auth.js';
 import { createAppleClient } from './apple/client.js';

@@ -31,7 +31,39 @@ npm ci
 npm run build
 ```
 
-Add the server to your MCP client's configuration, replacing the placeholder paths and credentials:
+### Codex
+
+After building, register the local server with the Codex CLI. Replace the
+placeholder credentials and paths with your own values:
+
+```sh
+codex mcp add appstore-connect \
+  --env ASC_KEY_ID=YOUR_KEY_ID \
+  --env ASC_ISSUER_ID=YOUR_ISSUER_UUID \
+  --env ASC_PRIVATE_KEY_PATH=/absolute/path/to/AuthKey.p8 \
+  -- "$(command -v node)" \
+  /absolute/path/to/appstore-connect-mcp/build/index.js
+```
+
+This shell example uses macOS/Linux syntax and records the absolute Node.js path.
+No global npm installation is required. Check the registration:
+
+```sh
+codex mcp list
+```
+
+Restart Codex and open a new conversation. Ask:
+
+> Use the appstore-connect MCP server and list my apps with list_apps.
+
+Then ask for the store versions of a selected app and its localized metadata.
+Listing the registered server confirms configuration; a successful tool call also
+checks the MCP connection and Apple authentication. This local-build setup has
+been manually tested with Codex and Apple access.
+
+### Other MCP clients
+
+Add the server to your client's configuration, replacing the placeholder paths and credentials:
 
 ```json
 {
@@ -50,6 +82,8 @@ Add the server to your MCP client's configuration, replacing the placeholder pat
 ```
 
 This example uses the common `mcpServers` JSON format; adapt it to your client's configuration format. Launch the compiled entry point directly and use absolute paths.
+
+### Credentials and manual startup
 
 | Variable | Value |
 | --- | --- |
@@ -105,6 +139,50 @@ npm test
 ```
 
 Tests use synthetic data and make no network requests. See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
+
+### Build an installable package
+
+```sh
+npm pack
+```
+
+Packing removes the previous `build/` directory and rebuilds the server. The package includes the compiled server,
+documentation, and license; source files, tests, and local configuration are excluded.
+Install the generated tarball to use the `appstore-connect-mcp` command:
+
+```sh
+npm install --global ./appstore-connect-mcp-1.0.0.tgz
+appstore-connect-mcp
+```
+
+Set the three `ASC_*` environment variables before starting the command. It runs
+the same stdio server as `node build/index.js` and waits for an MCP client on stdin.
+This local packaging workflow does not require publishing to npm.
+
+To test the installed package in Codex, register it separately from the local build:
+
+```sh
+codex mcp add appstore-connect-package \
+  --env ASC_KEY_ID=YOUR_KEY_ID \
+  --env ASC_ISSUER_ID=YOUR_ISSUER_UUID \
+  --env ASC_PRIVATE_KEY_PATH=/absolute/path/to/AuthKey.p8 \
+  -- "$(command -v appstore-connect-mcp)"
+```
+
+Restart Codex, open a new conversation, and ask:
+
+> Use only the appstore-connect-package MCP server and list my apps.
+
+Both the local-build and installed-package paths have been manually tested in
+Codex with Apple access. These smoke tests do not establish coverage of every tool
+or API-key role. Remove the package test setup when finished:
+
+```sh
+codex mcp remove appstore-connect-package
+npm uninstall --global appstore-connect-mcp
+```
+
+The separate `appstore-connect` registration continues to use the local build.
 
 ## License
 

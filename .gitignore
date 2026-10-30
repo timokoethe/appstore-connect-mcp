@@ -1,6 +1,7 @@
 # Dependencies and generated files
 /node_modules/
 /build/
+/appstore-connect-mcp-*.tgz
 /coverage/
 *.tsbuildinfo
 npm-debug.log*
