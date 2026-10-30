@@ -3,8 +3,17 @@
   "version": "1.0.0",
   "description": "A lightweight, read-only MCP server for Apple App Store Connect. Access apps, versions, metadata, TestFlight builds, and screenshots with Claude Code, Codex, and other MCP clients.",
   "main": "build/index.js",
+  "bin": {
+    "appstore-connect-mcp": "build/index.js"
+  },
+  "files": ["build/", "docs/", "SECURITY.md"],
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
   "scripts": {
     "build": "tsc",
+    "prepack": "node --input-type=module -e \"import { rmSync } from 'node:fs'; rmSync('build', { recursive: true, force: true });\" && npm run build",
     "start": "node build/index.js",
     "typecheck": "tsc --noEmit",
     "test": "npm run build && node --test test/*.test.js"
