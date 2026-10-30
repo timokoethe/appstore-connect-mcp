@@ -3,13 +3,17 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Read-only MCP server for Apple App Store Connect. Inspect apps, store versions, localized metadata, TestFlight builds, customer reviews, and screenshot metadata from Codex and other MCP clients.",
   "main": "build/index.js",
   "bin": {
     "appstoreconnect-mcp": "build/index.js"
   },
-  "files": ["build/", "docs/", "SECURITY.md"],
+  "files": [
+    "build/",
+    "docs/",
+    "SECURITY.md"
+  ],
   "engines": {
     "node": ">=20"
   },

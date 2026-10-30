@@ -32,7 +32,7 @@ Add the published package to your client's configuration, replacing the placehol
   "mcpServers": {
     "appstoreconnect-mcp": {
       "command": "npx",
-      "args": ["-y", "@timokoethe/appstoreconnect-mcp@1.0.0"],
+      "args": ["-y", "@timokoethe/appstoreconnect-mcp@1.0.1"],
       "env": {
         "ASC_KEY_ID": "YOUR_KEY_ID",
         "ASC_ISSUER_ID": "YOUR_ISSUER_UUID",

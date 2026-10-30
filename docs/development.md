@@ -80,7 +80,7 @@ documentation, and license; source files, tests, and local configuration are exc
 Install the generated tarball to use the `appstoreconnect-mcp` command:
 
 ```sh
-npm install --global ./timokoethe-appstoreconnect-mcp-1.0.0.tgz
+npm install --global ./timokoethe-appstoreconnect-mcp-1.0.1.tgz
 ```
 
 Set the three `ASC_*` environment variables before starting the command. It runs
@@ -113,7 +113,7 @@ npm uninstall --global @timokoethe/appstoreconnect-mcp
 ## GitHub releases
 
 After merging the release changes and confirming green PR checks, push a tag
-such as `v1.0.0` on the intended commit. The version after `v` must exactly match
+such as `v1.0.1` on the intended commit. The version after `v` must exactly match
 `package.json.version`. The release workflow creates a GitHub Release with
 automatically generated notes, grouped by PR labels in `.github/release.yml`.
 Tags such as `v1.1.0-beta1` create prereleases and require a matching package version.
