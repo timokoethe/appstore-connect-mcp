@@ -85,6 +85,16 @@ This example uses the common `mcpServers` JSON format; adapt it to your client's
 
 ### Credentials and manual startup
 
+In App Store Connect, open **Users and Access → Integrations → App Store Connect
+API → Team Keys**. An Account Holder or Admin can generate a team key; the Account
+Holder must first request API access if it is not enabled. Copy the Key ID and
+Issuer ID from the API key page and download the private `.p8` key. See
+[Apple's key setup guide](https://developer.apple.com/documentation/appstoreconnectapi/creating-api-keys-for-app-store-connect-api).
+
+Choose role permissions that allow reading the resources you need; this server
+does not bypass Apple's role restrictions. Team keys apply across all apps in the
+account. See [Apple's API access and role guidance](https://developer.apple.com/help/app-store-connect/get-started/app-store-connect-api/).
+
 | Variable | Value |
 | --- | --- |
 | `ASC_KEY_ID` | API key ID: 10 uppercase letters or digits. |
@@ -110,6 +120,9 @@ node --env-file=.env.local build/index.js
 The server waits for MCP requests on stdin; stdout is reserved for protocol traffic.
 If startup fails, check that all three variables are set and the key file is readable,
 unencrypted, and EC P-256.
+For tool errors, `authentication` means Apple authentication failed: check the
+matching Key ID, Issuer ID, private key, and whether the key was revoked.
+`access_denied` means Apple denied the request: check the key's role permissions.
 
 ## Usage
 
@@ -139,7 +152,7 @@ npm test
 npm run test:package
 ```
 
-Tests use synthetic data and make no network requests. See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
+Tests use synthetic data and make no network requests. See [CONTRIBUTING.md](https://github.com/timokoethe/appstore-connect-mcp/blob/main/CONTRIBUTING.md) for contribution guidelines.
 
 GitHub Actions runs these checks on Ubuntu with Node.js 20, 22, 24, and 26 for
 pull requests, including new commits pushed to an open pull request. The package
@@ -159,7 +172,6 @@ Install the generated tarball to use the `appstore-connect-mcp` command:
 
 ```sh
 npm install --global ./appstore-connect-mcp-1.0.0.tgz
-appstore-connect-mcp
 ```
 
 Set the three `ASC_*` environment variables before starting the command. It runs
