@@ -168,10 +168,10 @@ npm pack
 
 Packing removes the previous `build/` directory and rebuilds the server. The package includes the compiled server,
 documentation, and license; source files, tests, and local configuration are excluded.
-Install the generated tarball to use the `appstore-connect-mcp` command:
+Install the generated tarball to use the `appstoreconnect-mcp` command:
 
 ```sh
-npm install --global ./appstore-connect-mcp-1.0.0.tgz
+npm install --global ./appstoreconnect-mcp-1.0.0.tgz
 ```
 
 Set the three `ASC_*` environment variables before starting the command. It runs
@@ -185,7 +185,7 @@ codex mcp add appstore-connect-package \
   --env ASC_KEY_ID=YOUR_KEY_ID \
   --env ASC_ISSUER_ID=YOUR_ISSUER_UUID \
   --env ASC_PRIVATE_KEY_PATH=/absolute/path/to/AuthKey.p8 \
-  -- "$(command -v appstore-connect-mcp)"
+  -- "$(command -v appstoreconnect-mcp)"
 ```
 
 Restart Codex, open a new conversation, and ask:
@@ -198,7 +198,7 @@ or API-key role. Remove the package test setup when finished:
 
 ```sh
 codex mcp remove appstore-connect-package
-npm uninstall --global appstore-connect-mcp
+npm uninstall --global appstoreconnect-mcp
 ```
 
 The separate `appstore-connect` registration continues to use the local build.
