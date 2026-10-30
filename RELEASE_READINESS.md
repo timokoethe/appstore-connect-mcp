@@ -33,9 +33,14 @@ der öffentlichen npm-Registry wurde hier nicht geprüft.
 
 ## Noch offen vor dem öffentlichen Release
 
-- [ ] Claude-Code-Installation testen und konkret dokumentieren; bisher ist dafür
-  nur das generische `mcpServers`-JSON-Beispiel vorhanden.
-- [ ] Release-Tag und kurze Release Notes vorbereiten.
+- [ ] Release-Tag auf dem vorgesehenen Commit pushen und automatisch erstellte
+  Release Notes prüfen. Der Workflow und der Abgleich mit `package.json.version`
+  sind eingerichtet; npm-Veröffentlichung erfolgt separat.
+
+## Nach Version 1.0.0 zurückgestellt
+
+Claude-Code-Installation testen und konkret dokumentieren. Für Version 1.0.0
+ist der bestätigte Codex-Ablauf maßgeblich; Claude Code ist kein Release-Blocker.
 
 Mehr Tool-Abdeckung ist für den ersten Release nicht erforderlich. Der
 Funktionsumfang bleibt auf lesenden Zugriff begrenzt.

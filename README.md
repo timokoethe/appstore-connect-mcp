@@ -1,9 +1,10 @@
 # App Store Connect MCP
 
+[![CI](https://github.com/timokoethe/appstoreconnect-mcp/actions/workflows/ci.yml/badge.svg?event=pull_request)](https://github.com/timokoethe/appstoreconnect-mcp/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 ![Node.js: 20+](https://img.shields.io/badge/Node.js-20%2B-5FA04E?logo=nodedotjs&logoColor=white)
 
-Read-only access to Apple App Store Connect from Claude Code, Codex, and other [MCP](https://modelcontextprotocol.io/) clients. Inspect apps, releases, localized store metadata, builds, TestFlight groups, customer reviews, and screenshot metadata without modifying Apple resources.
+Read-only access to Apple App Store Connect from Codex and other [MCP](https://modelcontextprotocol.io/) clients. Inspect apps, releases, localized store metadata, builds, TestFlight groups, customer reviews, and screenshot metadata without modifying Apple resources.
 
 The server runs locally over stdio. API coverage is focused and still expanding; see the [tool reference](docs/tools.md) and [roadmap](docs/roadmap.md).
 
@@ -62,6 +63,9 @@ checks the MCP connection and Apple authentication. This local-build setup has
 been manually tested with Codex and Apple access.
 
 ### Other MCP clients
+
+Version 1.0.0 has been manually tested with Codex. Claude Code testing and
+client-specific setup instructions are deferred to a later version.
 
 Add the server to your client's configuration, replacing the placeholder paths and credentials:
 
@@ -202,6 +206,15 @@ npm uninstall --global appstoreconnect-mcp
 ```
 
 The separate `appstore-connect` registration continues to use the local build.
+
+### GitHub releases
+
+After merging the release changes and confirming green PR checks, push a tag
+such as `v1.0.0` on the intended commit. The version after `v` must exactly match
+`package.json.version`. The release workflow creates a GitHub Release with
+automatically generated notes, grouped by PR labels in `.github/release.yml`.
+Tags such as `v1.1.0-beta1` create prereleases and require a matching package version.
+This workflow does not publish to npm; npm publication is a separate step.
 
 ## License
 
