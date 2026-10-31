@@ -1,11 +1,12 @@
 # Release-Readiness-Review
 
-Stand: 30. Oktober 2026
+Stand: 31. Oktober 2026
 
 CLI-Einstieg und Paket-Build sind umgesetzt. Sowohl der lokale Build als auch das
 installierte Paket wurden vom Maintainer erfolgreich in Codex mit Apple-Zugriff
 getestet. Version 1.0.0 ist auf GitHub (vom Maintainer bestätigt) und unter
-`@timokoethe/appstoreconnect-mcp` auf npm veröffentlicht. Version 1.0.1 wird vorbereitet.
+`@timokoethe/appstoreconnect-mcp` auf npm veröffentlicht. Version 1.0.1 ist ebenfalls
+veröffentlicht (vom Maintainer bestätigt; npm-Eintrag geprüft).
 
 ## Erledigt
 
@@ -29,14 +30,17 @@ getestet. Version 1.0.0 ist auf GitHub (vom Maintainer bestätigt) und unter
 - [x] Aktuellen Repository-Arbeitsstand und gesamte lokal erreichbare Git-Historie
   mit Gitleaks geprüft: keine Secret-Treffer.
 
-Der npm-Eintrag für Version 1.0.0 wurde bestätigt. Ein Live-Test über npx aus der
+Die npm-Veröffentlichung von Version 1.0.0 wurde bestätigt; der npm-Eintrag für
+Version 1.0.1 wurde geprüft. Ein Live-Test über npx aus der
 öffentlichen npm-Registry wurde hier nicht durchgeführt.
 
-## Noch offen für Version 1.0.1
+## Veröffentlichung von Version 1.0.1
 
-- [ ] Release-Tag auf dem vorgesehenen Commit pushen und automatisch erstellte
-  Release Notes prüfen. Der Workflow und der Abgleich mit `package.json.version`
-  sind eingerichtet; npm-Veröffentlichung erfolgt separat.
+- [x] Version 1.0.1 veröffentlicht (vom Maintainer bestätigt); npm-Eintrag geprüft.
+
+Der Release-Workflow und der Abgleich mit `package.json.version` sind eingerichtet;
+die npm-Veröffentlichung erfolgt separat. Release-Tag und automatisch erstellte
+Release Notes wurden in diesem Doku-Review nicht erneut geprüft.
 
 ## Nach Version 1.0.0 zurückgestellt
 
